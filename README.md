@@ -1,4 +1,4 @@
-Big Data Docker Setup for MTG Data Pipeline
+# Big Data Docker Setup for MTG Data Pipeline
 1. Introduction
 This guide sets up the environment for running various Docker containers to manage a Big Data pipeline involving Apache Hadoop, Apache Airflow, PostgreSQL, and a Webserver for a Magic: The Gathering (MTG) data pipeline.
 
