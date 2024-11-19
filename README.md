@@ -15,70 +15,56 @@ docker network create --driver bridge bigdatanet
 # Pull Docker Images
 Download the necessary Docker images for Hadoop, Airflow, PostgreSQL, and the Webserver (Node.js):
 
-bash
-Copy code
-# Hadoop Image
+1. Hadoop Image:
 docker pull marcelmittelstaedt/spark_base:latest
 
-# Airflow Image
+2. Airflow Image:
 docker pull marcelmittelstaedt/airflow:latest
 
-# PostgreSQL Image
+3. PostgreSQL Image:
 docker pull postgres
 
-# Webserver (Node.js)
+4. Webserver (Node.js):
 docker pull node
-3.4 Run Docker Containers
+
+# Run Docker Containers
 Start the Docker containers for Hadoop, Airflow, PostgreSQL, and the Webserver. Each component will run in its own container.
 
-Hadoop:
-bash
-Copy code
+1. Hadoop:
 docker run -dit --name hadoop \
   -p 8088:8088 -p 9870:9870 -p 9864:9864 -p 10000:10000 \
   -p 8032:8032 -p 8030:8030 -p 8031:8031 -p 9000:9000 -p 8888:8888 \
   --net bigdatanet marcelmittelstaedt/spark_base:latest
-Airflow:
-bash
-Copy code
+2. Airflow:
 docker run -dit --name airflow \
   -p 8080:8080 \
   --net bigdatanet marcelmittelstaedt/airflow:latest
-PostgreSQL:
-bash
-Copy code
+3. PostgreSQL:
 docker run --name postgres \
   -e POSTGRES_PASSWORD=admin \
   -d --network bigdatanet postgres
-Webserver (Node.js):
-bash
-Copy code
-docker run -it -p 5000:5000 \
-  --net bigdatanet --name mtg-node-app mtg-node-app
-3.5 Get Files
+4. Webserver (Node.js): recommended later
+
+# Get Files
 Clone the repository and copy the necessary scripts to the respective Docker containers.
 
-Clone the Repository:
-bash
-Copy code
-git clone https://github.com/grxver7/Big-Data-Exam.git
-mkdir website_mtg
-Copy Python Scripts to Airflow Container:
-bash
-Copy code
+1. Clone the Repository: git clone https://github.com/grxver7/Big-Data-Exam.git
+2. Create directory for website: mkdir website_mtg
+
+3. Copy Files in the correct environment
+3.1. Copy Python Scripts to Airflow Container:
 for file in /home/lxcx_holder/Big-Data-Exam/python_scripts/*; do
     sudo docker cp "$file" airflow:/home/airflow/airflow/python/; done
-Copy DAGs to Airflow Container:
-bash
-Copy code
+
+3.2. Copy DAGs to Airflow Container:
 for file in /home/lxcx_holder/Big-Data-Exam/DAG/*; do
     sudo docker cp "$file" airflow:/home/airflow/airflow/dags/; done
-Copy Website Files to Webserver:
-bash
-Copy code
+
+3.3. Copy Website Files to Webserver:
 for file in /home/lxcx_holder/Big-Data-Exam/website_mtg/*; do
     cp "$file" /home/lxcx_holder/website_mtg/; done
-3.6 Modify and Start Services
+
+# Modify and Start Services
 Hadoop:
 Log into the Hadoop container and start the Hadoop services:
 
