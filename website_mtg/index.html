@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTG card search</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        .search-container { 
+            margin-bottom: 20px;
+        }
+        .search-container input {
+            height: 20px;
+            padding: 10px;
+            font-size: 16px;
+            width: 300px;
+        }
+        .search-container button {
+            height: 43px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #555555;
+            color: white;
+            border: none;
+        }
+        .search-container button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        img {
+            width: 100px;
+            height: auto;
+        }
+        #errorMessage {
+            color: red;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Magic: The Gathering Karten Suche</h1>
+
+<!-- Searchbox -->
+<div class="search-container">
+    <input type="text" id="searchQuery" placeholder="Search for card_name, test or artist" />
+    <button onclick="searchCards()">Search</button>
+</div>
+<!-- errormessage -->
+<div id="errorMessage"></div>
+
+<!-- Search MTG Cards -->
+<h2>Search MTG Cards</h2>
+<table id="resultsTable">
+    <thead>
+    <tr>
+        <th>Card ID</th>
+        <th>Name</th>
+        <th>Image</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<script>
+    // Function to search cards
+    async function searchCards() {
+        const searchQuery = document.getElementById("searchQuery").value;
+        const resultsTableBody = document.querySelector("#resultsTable tbody");
+        const errorMessage = document.getElementById("errorMessage");
+
+        // clear the table
+        resultsTableBody.innerHTML = "";
+        errorMessage.textContent = "";
+
+        if (searchQuery) {
+            try {
+                // API-Queue
+                const response = await fetch(`/search?query=${encodeURIComponent(searchQuery)}`);
+
+                if (!response.ok) {
+                    // Error message for no cards/data
+                    if (response.status === 404) {
+                        errorMessage.textContent = "No cards found!";
+                    } else {
+                        errorMessage.textContent = "Error in calling the data, try again later.";
+                    }
+                } else {
+                    const cards = await response.json();
+
+                    if (cards.length === 0) {
+                        errorMessage.textContent = "No cards found.";
+                    } else {
+                        // Print results in table
+                        cards.forEach(card => {
+                            const row = document.createElement("tr");
+                            row.innerHTML = `
+                                <td>${card.card_id}</td>
+                                <td>${card.name}</td>
+                                <td><img src="${card.image_url}" alt="Card Image"></td>
+                            `;
+                            resultsTableBody.appendChild(row);
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error("Error calling the cards:", error);
+                errorMessage.textContent = "Error in calling the data.";
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
