@@ -152,6 +152,18 @@ The workflow is automated using Airflow, with the following steps in the DAG:
 2. Cleaning and Uploading Data: Once the directories are created, the system cleans old raw data (delete_old_data_task), uploads new data to HDFS (upload_to_hdfs_task), and then processes it (collect_job_mtg).
 3. Data Processing in Layers: The data flows from the raw layer (via collect_job_mtg) to the bronze layer (bronze_job_mtg), then the silver layer (silver_job_mtg), and finally into a PostgreSQL database (ingestDB_job_mtg).
 
+### # Batch Process
+This is a batch process designed to load all MTG card data at once, which may take some time to complete.
+![image](https://github.com/user-attachments/assets/2dff15ba-c841-4ef7-829d-c20ac34518f0)
+
+### # The Wbsite
+Now the cards are available for search under http://<external-ip-of-vm>:5000/
+
+![image](https://github.com/user-attachments/assets/0e3892b8-da1e-4932-9120-8f3461bdb8d3)
+
+The image are clickable:
+
+![image](https://github.com/user-attachments/assets/19f36be5-0723-4c04-91d5-18bca935e85a)
 
 ### # Conclusion
 Congratulations! You've now set up a fully operational Docker-based environment for the MTG data pipeline. With Hadoop, Airflow, PostgreSQL, and a Node.js Webserver running in isolated containers, your pipeline is both scalable and easy to manage. You can now begin processing and managing MTG data effectively in your Big Data ecosystem.
