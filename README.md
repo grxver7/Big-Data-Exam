@@ -1,13 +1,10 @@
-Here's an updated version of your README with the console commands placed in copyable code blocks:
-
-```markdown
 # Big Data Docker Setup for MTG Data Pipeline
 
 ## 1. Introduction
 This guide provides detailed steps for setting up a Big Data pipeline environment using Docker. The pipeline involves several components: Apache Hadoop, Apache Airflow, PostgreSQL, and a Node.js-based Webserver, all orchestrated within Docker containers. This setup is designed to handle a Magic: The Gathering (MTG) data pipeline.
 
 ## 2. The following shows how to set up the data pipeling for MTG-Data:
-
+```markdown
 ### # Install Docker
 1. Update package list:
 ```bash
@@ -158,5 +155,3 @@ docker run -it -p 5000:5000 --net bigdatanet --name mtg-node-app mtg-node-app
 ### # Conclusion
 Congratulations! You've now set up a fully operational Docker-based environment for the MTG data pipeline. With Hadoop, Airflow, PostgreSQL, and a Node.js Webserver running in isolated containers, your pipeline is both scalable and easy to manage. You can now begin processing and managing MTG data effectively in your Big Data ecosystem.
 ```
-
-This format should make the instructions easy to follow and the console commands easy to copy. Let me know if you need further adjustments!
