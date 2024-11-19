@@ -30,7 +30,7 @@
             height: 3em;
             width: 10%;
             padding: 0.7em;
-            font-size: 1.2em;/
+            font-size: 1.2em;
             cursor: pointer;
             background-color: #1e1e1e;
             color: #ffffff;
@@ -61,13 +61,14 @@
         img {
             width: 20%;
             height: auto;
+            cursor: pointer; /* Make it clear the image is clickable */
         }
         #errorMessage {
             color: #ff4d4d;
             margin-bottom: 2%;
         }
 
-        /* Add Popup of Image */
+        /* Popup styling */
         .popup-overlay {
             display: none;
             position: fixed;
@@ -79,7 +80,6 @@
             z-index: 9999;
         }
 
-        /* Popup content */
         .popup-content {
             position: absolute;
             top: 50%;
@@ -100,7 +100,6 @@
         .popup-content:active {
             cursor: pointer;
         }
-    </style>
     </style>
 </head>
 <body>
