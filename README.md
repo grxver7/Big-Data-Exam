@@ -145,6 +145,11 @@ docker run -it -p 5000:5000 --net bigdatanet --name mtg-node-app mtg-node-app
 
 ### # DAG
 The proccess is automated using airflow. The following DAG Graph View gives insight of the process.
+![image](https://github.com/user-attachments/assets/87203bda-a907-4ee9-9f10-6422efcfe56b)
+
+1. Create directories (create_hdfs_raw_dir_task, create_hdfs_bronze_dir_task, create_hdfs_silver_dir_task) must happen first to ensure that the HDFS directories exist for storing the data.
+2. Cleaning and Uploading Data: Once the directories are created, the system cleans old raw data (delete_old_data_task), uploads new data to HDFS (upload_to_hdfs_task), and then processes it (collect_job_mtg).
+3. Data Processing in Layers: The data flows from the raw layer (via collect_job_mtg) to the bronze layer (bronze_job_mtg), then the silver layer (silver_job_mtg), and finally into a PostgreSQL database (ingestDB_job_mtg).
 
 
 ### # Conclusion
