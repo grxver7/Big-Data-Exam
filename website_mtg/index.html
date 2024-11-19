@@ -66,6 +66,41 @@
             color: #ff4d4d;
             margin-bottom: 2%;
         }
+
+        /* Add Popup of Image */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+        }
+
+        /* Popup content */
+        .popup-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 80%;
+            max-height: 80%;
+            text-align: center;
+        }
+
+        .popup-content img {
+            max-width: 100%;
+            max-height: 100%;
+            border: 0.2em solid #ffffff;
+        }
+
+        .popup-overlay:active,
+        .popup-content:active {
+            cursor: pointer;
+        }
+    </style>
     </style>
 </head>
 <body>
@@ -94,8 +129,38 @@
     </tbody>
 </table>
 
+<!-- Popup container -->
+<div id="popupOverlay" class="popup-overlay" onclick="closePopup()">
+    <div class="popup-content" id="popupContent">
+        <!-- The image will be dynamically inserted here -->
+    </div>
+</div>
+
 <script>
-    // Function to search cards
+    // Function to open the popup with the clicked image
+    function openPopup(imageUrl) {
+        const popupOverlay = document.getElementById("popupOverlay");
+        const popupContent = document.getElementById("popupContent");
+
+        // Create an image element for the popup
+        const popupImage = document.createElement("img");
+        popupImage.src = imageUrl;
+
+        // Clear any existing content and add the new image
+        popupContent.innerHTML = "";
+        popupContent.appendChild(popupImage);
+
+        // Show the popup
+        popupOverlay.style.display = "block";
+    }
+
+    // Function to close the popup
+    function closePopup() {
+        const popupOverlay = document.getElementById("popupOverlay");
+        popupOverlay.style.display = "none";
+    }
+
+    // Update the searchCards function to make images clickable
     async function searchCards() {
         const searchQuery = document.getElementById("searchQuery").value;
         const resultsTableBody = document.querySelector("#resultsTable tbody");
@@ -129,7 +194,7 @@
                             row.innerHTML = `
                                 <td>${card.card_id}</td>
                                 <td>${card.name}</td>
-                                <td><img src="${card.image_url}" alt="Card Image"></td>
+                                <td><img src="${card.image_url}" alt="Card Image" onclick="openPopup('${card.image_url}')"></td>
                             `;
                             resultsTableBody.appendChild(row);
                         });
