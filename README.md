@@ -1,7 +1,3 @@
-Here is the entire guide written as one continuous markdown with code blocks that are easily copyable on GitHub:
-
-markdown
-Copy code
 # Big Data Docker Setup for MTG Data Pipeline
 
 ## 1. Introduction
