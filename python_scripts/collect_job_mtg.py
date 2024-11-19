@@ -1,43 +1,115 @@
-# -*- coding: utf-8 -*-
-"""
-Collect and save Magic: The Gathering card data to a JSON file
-"""
-
-import os
-import time
+#!/usr/bin/env python
+# coding: utf-8
 import json
+import os
+import pyspark
 from mtgsdk import Card
+import time
+import subprocess
 
 def load_card_data():
-    """Load MTG card data using the mtgsdk."""
-    start_time = time.time()  # Track start time for data retrieval
+    start_time = time.time()  # Start time for data retrieval
     cards = Card.all()  # Retrieve all cards
+    loading_time = time.time() - start_time  # Calculate retrieval time
     card_list = []
+    count = 0  # Counter to track the number of entries
 
+    start_time = time.time()
+    # Iterate over each card and extract information
     for card in cards:
-        # Dynamically get all attributes from the card object
-        card_info = {attr: getattr(card, attr, None) for attr in card.__dict__.keys()}
+        card_info = {
+            "name": getattr(card, "name", None),
+            "multiverse_id": getattr(card, "multiverse_id", None),
+            "layout": getattr(card, "layout", None),
+            "names": getattr(card, "names", None),
+            "mana_cost": getattr(card, "mana_cost", None),
+            "cmc": getattr(card, "cmc", None),
+            "colors": getattr(card, "colors", None),
+            "color_identity": getattr(card, "color_identity", None),
+            "type": getattr(card, "type", None),
+            "supertypes": getattr(card, "supertypes", None),
+            "subtypes": getattr(card, "subtypes", None),
+            "rarity": getattr(card, "rarity", None),
+            "text": getattr(card, "text", None),
+            "flavor": getattr(card, "flavor", None),
+            "artist": getattr(card, "artist", None),
+            "number": getattr(card, "number", None),
+            "power": getattr(card, "power", None),
+            "toughness": getattr(card, "toughness", None),
+            "loyalty": getattr(card, "loyalty", None),
+            "variations": getattr(card, "variations", None),
+            "watermark": getattr(card, "watermark", None),
+            "border": getattr(card, "border", None),
+            "timeshifted": getattr(card, "timeshifted", None),
+            "hand": getattr(card, "hand", None),
+            "life": getattr(card, "life", None),
+            "reserved": getattr(card, "reserved", None),
+            "release_date": getattr(card, "release_date", None),
+            "starter": getattr(card, "starter", None),
+            "rulings": getattr(card, "rulings", None),
+            "foreign_names": getattr(card, "foreign_names", None),
+            "printings": getattr(card, "printings", None),
+            "original_text": getattr(card, "original_text", None),
+            "original_type": getattr(card, "original_type", None),
+            "legalities": getattr(card, "legalities", None),
+            "source": getattr(card, "source", None),
+            "image_url": getattr(card, "image_url", None),
+            "set": getattr(card, "set", None),
+            "set_name": getattr(card, "set_name", None),
+            "id": getattr(card, "id", None)
+        }
         card_list.append(card_info)
+        count += 1  # Increment the counter
 
-    retrieval_time = time.time() - start_time  # Calculate data retrieval time
-    print(f"Data retrieval completed in {retrieval_time:.2f} seconds.")
+    retrieval_time = time.time() - start_time  # Calculate loading time
+    
     return card_list
 
 def save_data_to_json(card_list):
-    """Save card data to a JSON file."""
-    directory = os.path.expanduser("~/raw_data")  # Expand ~ to home directory
-    os.makedirs(directory, exist_ok=True)
+    # Define the target directory and file path
+    directory = os.path.expanduser("~/raw_data/")  # Expand ~ to home directory
     file_path = os.path.join(directory, "mtg_data.json")
 
-    # Save the card list to JSON file
-    start_time = time.time()
+    # Ensure the directory exists
+    os.makedirs(directory, exist_ok=True)
+
+    start_time = time.time()  # Start time for saving data
+
+    # Save card information to mtg_data.json
     with open(file_path, "w", encoding="utf-8") as json_file:
         json.dump(card_list, json_file, ensure_ascii=False, indent=4)
 
-    save_time = time.time() - start_time  # Calculate time to save data
-    print(f"Data saved to {file_path} in {save_time:.2f} seconds.")
+    save_time = time.time() - start_time  # Calculate save time
+    print(f"All card data has been saved to {file_path} in {save_time:.2f} seconds.")
 
-if __name__ == "__main__":
-    # Load and save card data
-    card_list = load_card_data()
-    save_data_to_json(card_list)
+# Load card data
+card_list = load_card_data()
+
+# Save the data
+save_data_to_json(card_list)
+
+# Define the local file and HDFS target path
+local_file = os.path.expanduser("~/raw_data/mtg_data.json")  # Expand ~ to home directory
+hdfs_path = "/user/hadoop/data/raw/mtg_data.json"
+
+# Upload the local file to HDFS
+def upload_to_hdfs():
+    # Check if the local file exists
+    if not os.path.exists(local_file):
+        print(f"{local_file} does not exist. Exiting upload.")
+        return
+
+    result = subprocess.run(
+        ["hadoop", "fs", "-put", local_file, hdfs_path],
+        check=False,  # Don't raise an error automatically
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+
+    if result.returncode == 0:
+        print(f"Data successfully uploaded to HDFS at {hdfs_path}.")
+    else:
+        print(f"Error uploading data to HDFS: {result.stderr.decode()}")
+
+# Run the script
+upload_to_hdfs()
