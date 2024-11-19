@@ -160,4 +160,6 @@ ingestDB_job_mtg = SparkSubmitOperator(
 
 # Task dependencies
 create_hdfs_raw_dir_task >> delete_old_data_task >> upload_to_hdfs_task >> collect_job_mtg
-collect_job_mtg >> bronze_job_mtg >> silver_job_mtg >> ingestDB_job_mtg
+collect_job_mtg >> bronze_job_mtg
+bronze_job_mtg >> silver_job_mtg
+silver_job_mtg >> ingestDB_job_mtg
