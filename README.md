@@ -36,16 +36,16 @@ docker run -dit --name hadoop \
   -p 8032:8032 -p 8030:8030 -p 8031:8031 -p 9000:9000 -p 8888:8888 \
   --net bigdatanet marcelmittelstaedt/spark_base:latest
    
-2. Airflow:
+3. Airflow:
 docker run -dit --name airflow \
   -p 8080:8080 \
   --net bigdatanet marcelmittelstaedt/airflow:latest
    
-3. PostgreSQL:
+5. PostgreSQL:
 docker run --name postgres \
   -e POSTGRES_PASSWORD=admin \
   -d --network bigdatanet postgres
-4. Webserver (Node.js): recommended later
+6. Webserver (Node.js): recommended later
 
 # Get Files
 Clone the repository and copy the necessary scripts to the respective Docker containers.
