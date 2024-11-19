@@ -154,6 +154,7 @@ The workflow is automated using Airflow, with the following steps in the DAG:
 
 ### # Batch Process
 This is a batch process designed to load all MTG card data at once, which may take some time to complete.
+
 ![image](https://github.com/user-attachments/assets/2dff15ba-c841-4ef7-829d-c20ac34518f0)
 
 ### # The Wbsite
@@ -161,7 +162,7 @@ Now the cards are available for search under http://<external-ip-of-vm>:5000/
 
 ![image](https://github.com/user-attachments/assets/0e3892b8-da1e-4932-9120-8f3461bdb8d3)
 
-The image are clickable:
+The images are clickable:
 
 ![image](https://github.com/user-attachments/assets/19f36be5-0723-4c04-91d5-18bca935e85a)
 
