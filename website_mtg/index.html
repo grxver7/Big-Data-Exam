@@ -1,72 +1,87 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MTG card search</title>
+    <title>MTG Card Search</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            padding: 20px;
-            background-color: #f4f4f9;
+            padding: 2%;
+            background-color: #121212; /* Dark background */
+            color: #ffffff;
         }
-        .search-container { 
-            margin-bottom: 20px;
+        .search-container {
+            margin-bottom: 1%;
+            display: flex;
+            align-items: center;
         }
         .search-container input {
-            height: 20px;
-            padding: 10px;
-            font-size: 16px;
-            width: 300px;
+            height: 3em;
+            padding: 0.7em;
+            font-size: 1.2em;
+            width: 40%;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            border: 0.1em solid #444444;
+            box-sizing: border-box;
         }
         .search-container button {
-            height: 43px;
-            padding: 10px;
-            font-size: 16px;
+            height: 3em;
+            width: 10%;
+            padding: 0.7em;
+            font-size: 1.2em;/
             cursor: pointer;
-            background-color: #555555;
-            color: white;
-            border: none;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            margin: 0.5em;
+            border: 0.1em solid #444444;
+            box-sizing: border-box;
         }
         .search-container button:hover {
-            background-color: #0056b3;
+            background-color: #0077e6;
         }
         table {
             width: 100%;
             border-collapse: collapse;
+            min-height: 300px;
         }
         th, td {
-            padding: 12px;
-            border: 1px solid #ddd;
+            padding: 1%;
+            border: 0.1em solid #444444;
             text-align: left;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #333333;
+            color: #ffffff;
+        }
+        td {
+            background-color: #1e1e1e;
         }
         img {
-            width: 100px;
+            width: 20%;
             height: auto;
         }
         #errorMessage {
-            color: red;
-            margin-bottom: 10px;
+            color: #ff4d4d;
+            margin-bottom: 2%;
         }
     </style>
 </head>
 <body>
 
-<h1>Magic: The Gathering Karten Suche</h1>
+<h1>Magic: The Gathering Card Search</h1>
 
 <!-- Searchbox -->
 <div class="search-container">
-    <input type="text" id="searchQuery" placeholder="Search for card_name, test or artist" />
+    <input type="text" id="searchQuery" placeholder="Search for card_name, text, or artist" />
     <button onclick="searchCards()">Search</button>
 </div>
-<!-- errormessage -->
+<!-- Error message -->
 <div id="errorMessage"></div>
 
 <!-- Search MTG Cards -->
-<h2>Search MTG Cards</h2>
+<h2>Results</h2>
 <table id="resultsTable">
     <thead>
     <tr>
@@ -86,13 +101,13 @@
         const resultsTableBody = document.querySelector("#resultsTable tbody");
         const errorMessage = document.getElementById("errorMessage");
 
-        // clear the table
+        // Clear the table
         resultsTableBody.innerHTML = "";
         errorMessage.textContent = "";
 
         if (searchQuery) {
             try {
-                // API-Queue
+                // API Query
                 const response = await fetch(`/search?query=${encodeURIComponent(searchQuery)}`);
 
                 if (!response.ok) {
