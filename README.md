@@ -5,7 +5,7 @@ This guide provides detailed steps for setting up a Big Data pipeline environmen
 
 ## 2. The following shows how to set up the data pipeling for MTG-Data:
 
-1. Install Docker:
+### # Install Docker:
 ```bash
 sudo apt-get update
 sudo apt-get install docker.io
