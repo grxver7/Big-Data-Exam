@@ -35,10 +35,12 @@ docker run -dit --name hadoop \
   -p 8088:8088 -p 9870:9870 -p 9864:9864 -p 10000:10000 \
   -p 8032:8032 -p 8030:8030 -p 8031:8031 -p 9000:9000 -p 8888:8888 \
   --net bigdatanet marcelmittelstaedt/spark_base:latest
+   
 2. Airflow:
 docker run -dit --name airflow \
   -p 8080:8080 \
   --net bigdatanet marcelmittelstaedt/airflow:latest
+   
 3. PostgreSQL:
 docker run --name postgres \
   -e POSTGRES_PASSWORD=admin \
@@ -65,65 +67,36 @@ for file in /home/lxcx_holder/Big-Data-Exam/website_mtg/*; do
     cp "$file" /home/lxcx_holder/website_mtg/; done
 
 # Modify and Start Services
-Hadoop:
+
+1. Hadoop:
 Log into the Hadoop container and start the Hadoop services:
-
-bash
-Copy code
-docker exec -it hadoop bash
-sudo su hadoop
-cd
-start-all.sh
-hiveserver2
-Airflow:
+  docker exec -it hadoop bash
+  sudo su hadoop
+  cd
+  start-all.sh
+  hiveserver2
+2. Airflow:
 Log into the Airflow container, install necessary Python dependencies, and access the Airflow UI:
+  sudo docker exec -it airflow bash
+  sudo su airflow
+  pip install mtgsdk
+Access Airflow at: http://<external-ip-of-vm>:8080/admin/
 
-bash
-Copy code
-sudo docker exec -it airflow bash
-sudo su airflow
-pip install mtgsdk
-Access Airflow at:
+# Set Up the Webserver
+Use the Dockerfile
+In the website_mtg directory, use the Dockerfile to build the Node.js-based webserver.
 
-arduino
-Copy code
-http://<external-ip-of-vm>:8080/admin/
-3.7 Set Up the Webserver
-Modify the Dockerfile
-In the website_mtg directory, modify the Dockerfile to build the Node.js-based webserver.
-
-Dockerfile Example:
-
-Dockerfile
-Copy code
-# Use Node.js as the base image
-FROM node:22
-
-# Set the working directory
-WORKDIR /usr/src/app
-
-# Install dependencies
-RUN echo '{ "name": "my-app", "version": "1.0.0", "dependencies": { "express": "^4.18.2", "pg": "^8.11.0" } }' > package.json
-RUN npm install
-
-# Copy the rest of the app files
-COPY . .
-
-# Expose the application port
-EXPOSE 5000
-
-# Run the server
-CMD ["node", "server.js"]
-Build and Run the Webserver:
-bash
-Copy code
 # Build the Docker image
 sudo docker build --no-cache -t mtg-node-app .
+or
+sudo docker build -t mtg-node-app .
 
 # Run the webserver container
 docker run -it -p 5000:5000 --net bigdatanet --name mtg-node-app mtg-node-app
-4. Troubleshooting
+
+# Troubleshooting
 Airflow is not accessible? Try restarting the VM or your local machine.
 Containers not communicating? Ensure all containers are connected to the bigdatanet network.
-5. Conclusion
+
+# Conclusion
 Congratulations! You've now set up a fully operational Docker-based environment for the MTG data pipeline. With Hadoop, Airflow, PostgreSQL, and a Node.js Webserver running in isolated containers, your pipeline is both scalable and easy to manage. You can now begin processing and managing MTG data effectively in your Big Data ecosystem.
