@@ -144,7 +144,8 @@ docker run -it -p 5000:5000 --net bigdatanet --name mtg-node-app mtg-node-app
 - **Containers not communicating?** Ensure all containers are connected to the `bigdatanet` network.
 
 ### # DAG
-The proccess is automated using airflow. The following DAG Graph View gives insight of the process.
+The workflow is automated using Airflow, with the following steps in the DAG:
+
 ![image](https://github.com/user-attachments/assets/87203bda-a907-4ee9-9f10-6422efcfe56b)
 
 1. Create directories (create_hdfs_raw_dir_task, create_hdfs_bronze_dir_task, create_hdfs_silver_dir_task) must happen first to ensure that the HDFS directories exist for storing the data.
