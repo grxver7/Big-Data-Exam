@@ -3,15 +3,6 @@
 1. Introduction
 This guide provides detailed steps for setting up a Big Data pipeline environment using Docker. The pipeline involves several components: Apache Hadoop, Apache Airflow, PostgreSQL, and a Node.js-based Webserver, all orchestrated within Docker containers. This setup is designed to handle a Magic: The Gathering (MTG) data pipeline.
 
-2. Prerequisites
-Before you begin, make sure you have the following installed on your system:
-
-3. Installation Steps
-3.1 Install Docker
-To install Docker, execute the following commands:
-
-bash
-Copy code
 # Update package list
 sudo apt-get update
 
