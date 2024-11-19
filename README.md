@@ -143,5 +143,9 @@ docker run -it -p 5000:5000 --net bigdatanet --name mtg-node-app mtg-node-app
 - **Airflow is not accessible?** Try restarting the VM or your local machine.
 - **Containers not communicating?** Ensure all containers are connected to the `bigdatanet` network.
 
+### # DAG
+The proccess is automated using airflow. The following DAG Graph View gives insight of the process.
+
+
 ### # Conclusion
 Congratulations! You've now set up a fully operational Docker-based environment for the MTG data pipeline. With Hadoop, Airflow, PostgreSQL, and a Node.js Webserver running in isolated containers, your pipeline is both scalable and easy to manage. You can now begin processing and managing MTG data effectively in your Big Data ecosystem.
