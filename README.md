@@ -14,9 +14,9 @@ directory on HDFS
 - Export MTG data to end-user database (e.g. MySQL,
 MongoDB…)
 - Provide a simple HTML Frontend which is able to:
-- read from end-user database
-- process user input (card name, text or artist)
-- display search results
+  - read from end-user database
+  - process user input (card name, text or artist)
+  - display search results
 - The whole data workflow must be implemented within an ETL
 workflow tool (e.g. Pentaho Data Integration or Airflow) and run automatically
 
