@@ -207,6 +207,8 @@ Die Tabelle beschreibt jeden Job im DAG:
 
 
 
+
+
 # # Der Datensatz
 Eine ausführlichere Beschreibung der Daten findet sich in der ergänzenden PDF-Datei mit dem Titel „Doku_Datenstruktur_&_Datensammlung.pdf“.
 
