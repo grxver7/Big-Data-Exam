@@ -1,7 +1,24 @@
 # Big Data Docker Setup for MTG Data Pipeline
 
-## 1. Introduction
-This guide provides detailed steps for setting up a Big Data pipeline environment using Docker. The pipeline involves several components: Apache Hadoop, Apache Airflow, PostgreSQL, and a Node.js-based Webserver, all orchestrated within Docker containers. This setup is designed to handle a data pipeline for data from "Magic: The Gathering API" (https://docs.magicthegathering.io/).
+# Introduction
+This guide provides detailed steps for setting up a Big Data pipeline environment using Docker. The pipeline consists of several key components: Apache Hadoop, Apache Airflow, PostgreSQL, and a Node.js-based web server, all orchestrated within Docker containers. This setup is designed to handle and process data from the Magic: The Gathering API (https://docs.magicthegathering.io/),
+
+# Task description
+The task is to make use of this data to build a searchable database of all MTG trading cards.
+
+Workflow:
+- Gather data from api.magicthegathering.io
+- Save raw data (JSON files) to HDFS
+- Optimize, reduce and clean raw data and save it to final
+directory on HDFS
+- Export MTG data to end-user database (e.g. MySQL,
+MongoDB…)
+- Provide a simple HTML Frontend which is able to:
+- read from end-user database
+- process user input (card name, text or artist)
+- display search results
+- The whole data workflow must be implemented within an ETL
+workflow tool (e.g. Pentaho Data Integration or Airflow) and run automatically
 
 # ETL-Workflow
 
