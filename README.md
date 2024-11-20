@@ -212,7 +212,7 @@ The table describes each job in the DAG
 # # The Data
 A more detailed description of the data can be found in the supplementary PDF titled "Doku_Datenstruktur_&_Datensammlung.pdf."
 
-### Example Data from the Silver Layer (3NF)
+### # Example Data from the Silver Layer (3NF)
 
 *First 5 rows of 'cards' table:*
 | *card_id*                            | *name*           | *mana_cost* | *cmc* | *type*                  | *rarity* | *text*                      | *power* | *toughness* | *artist*               | *image_url*     | *set* | *set_name*              |
