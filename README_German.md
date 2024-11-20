@@ -205,6 +205,8 @@ Die Tabelle beschreibt jeden Job im DAG:
 | silver_job_mtg             | Transformiert die Bronze-Schicht-Daten in eine 3NF-Struktur, um Redundanzen und Anomalien zu reduzieren.   |
 | ingestDB_job_mtg           | Lädt die bereinigten Daten in eine PostgreSQL-Datenbank. |
 
+
+
 # # Der Datensatz
 Eine ausführlichere Beschreibung der Daten findet sich in der ergänzenden PDF-Datei mit dem Titel „Doku_Datenstruktur_&_Datensammlung.pdf“.
 
