@@ -1,7 +1,7 @@
 # Big Data Docker Setup for MTG Data Pipeline
 
 # Introduction
-This guide provides detailed steps for setting up a Big Data pipeline environment using Docker. The pipeline consists of several key components: Apache Hadoop, Apache Airflow, PostgreSQL, and a Node.js-based web server, all orchestrated within Docker containers. This setup is designed to handle and process data from the Magic: The Gathering API (https://docs.magicthegathering.io/),
+This guide provides detailed steps for setting up a Big Data pipeline environment using Docker. The pipeline consists of several key components: Apache Hadoop, Apache Airflow, PostgreSQL, and a Node.js-based web server, all orchestrated within Docker containers. This setup is designed to handle and process data from the Magic: The Gathering API (https://docs.magicthegathering.io/).
 
 # Task description
 The task is to make use of this data to build a searchable database of all MTG trading cards.
@@ -39,8 +39,7 @@ sudo usermod -aG docker $USER # exit and login again
 ```
 
 ### # Create a docker network
-The docker network allows communication between the dockers.
-Create a custom network for the containers:
+To create a custom Docker network that enables communication between containers, use the following command:
 ```bash
 docker network create --driver bridge bigdatanet
 ```
@@ -59,11 +58,13 @@ docker pull marcelmittelstaedt/airflow:latest
 ```
 
 3. PostgreSQL Image:
+4. Version: psql (PostgreSQL) 17.1 (Debian 17.1-1.pgdg120+1)
 ```bash
 docker pull postgres
 ```
 
 4. Webserver (Node.js):
+Version: v22.11.0
 ```bash
 docker pull node
 ```
@@ -206,3 +207,6 @@ The table describes each job in the DAG
 | bronze_job_mtg             | Converts raw JSON data into Parquet format for the Bronze layer in HDFS.    |
 | silver_job_mtg             | Transforms Bronze layer data into a 3NF structure, reducing redundancies and anomalies.   |
 | ingestDB_job_mtg           | 	Loads the transformed Silver layer data into the database, including only the necessary fields for reporting.  |
+
+
+A more detailed description of the data structure can be found in the supplementary PDF titled "Doku_Datenstruktur_&_Datensammlung.pdf."
