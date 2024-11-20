@@ -157,7 +157,7 @@ This is a batch process designed to load all MTG card data at once, which may ta
 
 ![image](https://github.com/user-attachments/assets/2dff15ba-c841-4ef7-829d-c20ac34518f0)
 
-### # The Wbsite
+### # The Website
 Now the cards are available for search under http://<external-ip-of-vm>:5000/
 
 ![image](https://github.com/user-attachments/assets/0e3892b8-da1e-4932-9120-8f3461bdb8d3)
@@ -165,6 +165,8 @@ Now the cards are available for search under http://<external-ip-of-vm>:5000/
 The images are clickable:
 
 ![image](https://github.com/user-attachments/assets/19f36be5-0723-4c04-91d5-18bca935e85a)
+
+# ETL-Workflow
 
 ### # ETL-Workflow
 The following diagram shows the ETL workflow of the exam project. The workflow is based on the concept of the Medallion Architecture, with a stepwise preparation of data through the Bronze/Silver/Gold layers. In the context of the project, an additional Raw layer was introduced, where the data is first stored as JSON in the HDFS, as required in the exam project. The Gold layer is implemented in the form of a PostgreSQL database and contains only the datasets required at the end of the exam project: card_id, name, text, artist, image_url. The data is then made available for consumption on a website hosted with Node.js (on a Docker container).
