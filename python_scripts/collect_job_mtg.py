@@ -2,64 +2,68 @@
 # coding: utf-8
 import json
 import os
+import pyspark
+from mtgsdk import Card
 import time
 import subprocess
-from concurrent.futures import ThreadPoolExecutor
-from mtgsdk import Card
 
 def load_card_data():
     start_time = time.time()  # Start time for data retrieval
     cards = Card.all()  # Retrieve all cards
     loading_time = time.time() - start_time  # Calculate retrieval time
+    card_list = []
+    count = 0  # Counter to track the number of entries
 
-    # Directly use list comprehension for faster construction
-    card_list = [
-        {
-            "name": card.name,
-            "multiverse_id": card.multiverse_id,
-            "layout": card.layout,
-            "names": card.names,
-            "mana_cost": card.mana_cost,
-            "cmc": card.cmc,
-            "colors": card.colors,
-            "color_identity": card.color_identity,
-            "type": card.type,
-            "supertypes": card.supertypes,
-            "subtypes": card.subtypes,
-            "rarity": card.rarity,
-            "text": card.text,
-            "flavor": card.flavor,
-            "artist": card.artist,
-            "number": card.number,
-            "power": card.power,
-            "toughness": card.toughness,
-            "loyalty": card.loyalty,
-            "variations": card.variations,
-            "watermark": card.watermark,
-            "border": card.border,
-            "timeshifted": card.timeshifted,
-            "hand": card.hand,
-            "life": card.life,
-            "reserved": card.reserved,
-            "release_date": card.release_date,
-            "starter": card.starter,
-            "rulings": card.rulings,
-            "foreign_names": card.foreign_names,
-            "printings": card.printings,
-            "original_text": card.original_text,
-            "original_type": card.original_type,
-            "legalities": card.legalities,
-            "source": card.source,
-            "image_url": card.image_url,
-            "set": card.set,
-            "set_name": card.set_name,
-            "id": card.id
+    start_time = time.time()
+    # Iterate over each card and extract information
+    for card in cards:
+        card_info = {
+            "name": getattr(card, "name", None),
+            "multiverse_id": getattr(card, "multiverse_id", None),
+            "layout": getattr(card, "layout", None),
+            "names": getattr(card, "names", None),
+            "mana_cost": getattr(card, "mana_cost", None),
+            "cmc": getattr(card, "cmc", None),
+            "colors": getattr(card, "colors", None),
+            "color_identity": getattr(card, "color_identity", None),
+            "type": getattr(card, "type", None),
+            "supertypes": getattr(card, "supertypes", None),
+            "subtypes": getattr(card, "subtypes", None),
+            "rarity": getattr(card, "rarity", None),
+            "text": getattr(card, "text", None),
+            "flavor": getattr(card, "flavor", None),
+            "artist": getattr(card, "artist", None),
+            "number": getattr(card, "number", None),
+            "power": getattr(card, "power", None),
+            "toughness": getattr(card, "toughness", None),
+            "loyalty": getattr(card, "loyalty", None),
+            "variations": getattr(card, "variations", None),
+            "watermark": getattr(card, "watermark", None),
+            "border": getattr(card, "border", None),
+            "timeshifted": getattr(card, "timeshifted", None),
+            "hand": getattr(card, "hand", None),
+            "life": getattr(card, "life", None),
+            "reserved": getattr(card, "reserved", None),
+            "release_date": getattr(card, "release_date", None),
+            "starter": getattr(card, "starter", None),
+            "rulings": getattr(card, "rulings", None),
+            "foreign_names": getattr(card, "foreign_names", None),
+            "printings": getattr(card, "printings", None),
+            "original_text": getattr(card, "original_text", None),
+            "original_type": getattr(card, "original_type", None),
+            "legalities": getattr(card, "legalities", None),
+            "source": getattr(card, "source", None),
+            "image_url": getattr(card, "image_url", None),
+            "set": getattr(card, "set", None),
+            "set_name": getattr(card, "set_name", None),
+            "id": getattr(card, "id", None)
         }
-        for card in cards
-    ]
-    
+        card_list.append(card_info)
+        count += 1  # Increment the counter
+
     retrieval_time = time.time() - start_time  # Calculate loading time
-    return card_list, retrieval_time
+    
+    return card_list
 
 def save_data_to_json(card_list):
     # Define the target directory and file path
@@ -77,7 +81,16 @@ def save_data_to_json(card_list):
 
     save_time = time.time() - start_time  # Calculate save time
     print(f"All card data has been saved to {file_path} in {save_time:.2f} seconds.")
-    return file_path
+
+# Load card data
+card_list = load_card_data()
+
+# Save the data
+save_data_to_json(card_list)
+
+# Define the local file and HDFS target path
+local_file = os.path.expanduser("~/raw_data/mtg_data.json")  # Expand ~ to home directory
+hdfs_path = "/user/hadoop/data/raw/mtg_data.json"
 
 # Create the HDFS directory if it doesn't exist
 def create_hdfs_directory():
@@ -86,41 +99,35 @@ def create_hdfs_directory():
     except subprocess.CalledProcessError:
         subprocess.run(["hadoop", "fs", "-mkdir", "-p", "/user/hadoop/data/raw"], check=True)
 
+# Delete all old data in the raw directory
 def delete_all_old_data():
-    # Directly remove old data if present
-    subprocess.run(["hadoop", "fs", "-rm", "-r", "/user/hadoop/data/raw/*"], check=True)
+    try:
+        subprocess.run(["hadoop", "fs", "-rm", "-r", "/user/hadoop/data/raw/*"], check=True)  # Deletes all files in raw directory
+        print("Old data deleted from HDFS raw directory.")
+    except subprocess.CalledProcessError:
+        print("No existing data found in the raw directory, nothing to delete.")
 
-def upload_to_hdfs(local_file, hdfs_path):
+# Upload the new file to HDFS
+def upload_to_hdfs():
     # Check if the local file exists
     if not os.path.exists(local_file):
         print(f"{local_file} does not exist. Exiting upload.")
         return
 
-    # Upload the file to HDFS
-    subprocess.run(["hadoop", "fs", "-put", local_file, hdfs_path], check=True)
-    print(f"Data successfully uploaded to HDFS at {hdfs_path}.")
-
-def process_and_upload():
-    # Load card data and save it to a JSON file
-    card_list, retrieval_time = load_card_data()
-    print(f"Data retrieval time: {retrieval_time:.2f} seconds.")
-    
-    # Save data to local JSON file
-    local_file = save_data_to_json(card_list)
-    
-    # Define the HDFS path
-    hdfs_path = "/user/hadoop/data/raw/mtg_data.json"
-    
-    # Create HDFS directory if it doesn't exist and delete old data
     create_hdfs_directory()
-    delete_all_old_data()
-    
-    # Upload the data to HDFS
-    upload_to_hdfs(local_file, hdfs_path)
+    delete_all_old_data()  # Delete all old data before uploading new data
+
+    result = subprocess.run(
+        ["hadoop", "fs", "-put", local_file, hdfs_path],
+        check=False,  # Don't raise an error automatically
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+
+    if result.returncode == 0:
+        print(f"Data successfully uploaded to HDFS at {hdfs_path}.")
+    else:
+        print(f"Error uploading data to HDFS: {result.stderr.decode()}")
 
 # Run the script
-if __name__ == "__main__":
-    start_time = time.time()
-    process_and_upload()
-    total_time = time.time() - start_time
-    print(f"Total process time: {total_time:.2f} seconds.")
+upload_to_hdfs()
