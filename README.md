@@ -143,20 +143,6 @@ docker run -it -p 5000:5000 --net bigdatanet --name mtg-node-app mtg-node-app
 - **Airflow is not accessible?** Try restarting the VM or your local machine.
 - **Containers not communicating?** Ensure all containers are connected to the `bigdatanet` network.
 
-### # DAG
-The workflow is automated using Airflow, with the following steps in the DAG:
-
-![image](https://github.com/user-attachments/assets/87203bda-a907-4ee9-9f10-6422efcfe56b)
-
-1. Create directories (create_hdfs_raw_dir_task, create_hdfs_bronze_dir_task, create_hdfs_silver_dir_task) must happen first to ensure that the HDFS directories exist for storing the data.
-2. Cleaning and Uploading Data: Once the directories are created, the system cleans old raw data (delete_old_data_task), uploads new data to HDFS (upload_to_hdfs_task), and then processes it (collect_job_mtg).
-3. Data Processing in Layers: The data flows from the raw layer (via collect_job_mtg) to the bronze layer (bronze_job_mtg), then the silver layer (silver_job_mtg), and finally into a PostgreSQL database (ingestDB_job_mtg).
-
-### # Batch Process
-This is a batch process designed to load all MTG card data at once, which may take some time to complete.
-
-![image](https://github.com/user-attachments/assets/2dff15ba-c841-4ef7-829d-c20ac34518f0)
-
 ### # The Website
 Now the cards are available for search under http://<external-ip-of-vm>:5000/
 
@@ -166,10 +152,39 @@ The images are clickable:
 
 ![image](https://github.com/user-attachments/assets/19f36be5-0723-4c04-91d5-18bca935e85a)
 
+### # Batch Process
+This is a batch process designed to load all MTG card data at once, which may take some time to complete.
+
+![image](https://github.com/user-attachments/assets/2dff15ba-c841-4ef7-829d-c20ac34518f0)
+
 # ETL-Workflow
 
 ### # ETL-Workflow
 The following diagram shows the ETL workflow of the exam project. The workflow is based on the concept of the Medallion Architecture, with a stepwise preparation of data through the Bronze/Silver/Gold layers. In the context of the project, an additional Raw layer was introduced, where the data is first stored as JSON in the HDFS, as required in the exam project. The Gold layer is implemented in the form of a PostgreSQL database and contains only the datasets required at the end of the exam project: card_id, name, text, artist, image_url. The data is then made available for consumption on a website hosted with Node.js (on a Docker container).
 
-
 ![image](https://github.com/user-attachments/assets/753503cc-eaa6-46c0-85f1-19f9f4992040)
+
+### # DAG
+The workflow is automated using Airflow, with the following steps in the DAG:
+
+![image](https://github.com/user-attachments/assets/87203bda-a907-4ee9-9f10-6422efcfe56b)
+
+1. Create directories (create_hdfs_raw_dir_task, create_hdfs_bronze_dir_task, create_hdfs_silver_dir_task) must happen first to ensure that the HDFS directories exist for storing the data.
+2. Cleaning and Uploading Data: Once the directories are created, the system cleans old raw data (delete_old_data_task), uploads new data to HDFS (upload_to_hdfs_task), and then processes it (collect_job_mtg).
+3. Data Processing in Layers: The data flows from the raw layer (via collect_job_mtg) to the bronze layer (bronze_job_mtg), then the silver layer (silver_job_mtg), and finally into a PostgreSQL database (ingestDB_job_mtg).
+
+### # Job Description
+The table describes each job in the DAG
+
+| Job Name                  | Description                                                                 |
+|---------------------------|-----------------------------------------------------------------------------|
+| create_hdfs_bronze_directory | Creates the directory for the Bronze layer in HDFS.                       |
+| create_hdfs_silver_directory | Creates the directory for the Silver layer in HDFS.                       |
+| create_raw_directory       | Creates a local directory to temporarily store raw data.                    |
+| create_hdfs_raw_directory  | Creates the directory for raw data in HDFS.                                 |
+| clear_local_raw_dir        | Clears the local raw data directory to make space for new data.             |
+| upload_to_hdfs             | Uploads the collected data to HDFS.                                         |
+| collect_job_mtg            | Collects Magic: The Gathering data from the API and saves it locally.       |
+| bronze_job_mtg             | Processes the data for the Bronze layer (e.g., minimal transformations).    |
+| silver_job_mtg             | Transforms the data for the Silver layer (e.g., cleaning, normalization).   |
+| ingestDB_job_mtg           | Loads the transformed data into the database for reporting.                 |
