@@ -211,3 +211,45 @@ The table describes each job in the DAG
 
 ### # The Data
 A more detailed description of the data can be found in the supplementary PDF titled "Doku_Datenstruktur_&_Datensammlung.pdf."
+
+#### Example Data from the Silver Layer (3NF)
+| *card_id*                            | *name*           | *mana_cost* | *cmc* | *type*                  | *rarity* | *text*                      | *power* | *toughness* | *artist*               | *image_url*     | *set* | *set_name*              |
+|----------------------------------------|--------------------|---------------|---------|---------------------------|------------|-------------------------------|-----------|---------------|--------------------------|-------------------|---------|---------------------------|
+| 72290bcf-54c4-594...                   | Llanowar Elves     | {G}           | 1.0     | Creature — Elf Druid      | Common     | {T}: Add {G}.                 | 1         | 1             | Victor Adame Minguez     | null              | PANA    | MTG Arena Promos          |
+| 331efc27-0224-5da...                   | Vessel of Volatility| {1}{R}        | 2.0     | Enchantment              | Common     | {1}{R}, Sacrifice...         | null      | null          | Kieran Yanner            | http://gatherer...| SOI     | Shadows over Innistrad    |
+| 06d0520e-9ecf-592...                   | Taii Wakeen, Perf...| {R}{W}        | 2.0     | Legendary Creature — Elf  | Rare       | Whenever a source...         | 2         | 3             | David Auden Nash         | null              | POTJ    | Outlaws of Thunder...     |
+| c6dfe188-fe59-589...                   | Swamp              | null          | 0.0     | Basic Land — Swamp       | Common     | ({T}: Add {B}.)              | null      | null          | Svetlin Velinov          | http://gatherer...| ELD     | Throne of Eldraine        |
+| 0d57455f-8257-50c...                   | Ingenious Mastery  | {X}{2}{U}     | 3.0     | Sorcery                  | Rare       | You may pay {2}{U}...       | null      | null          | Cristi Balanescu         | null              | PSTX    | Strixhaven: School...     |
+
+---
+
+### *First 5 rows of 'foreign_names' table:*
+| *card_id*                            | *foreign_name*     | *language*   | *foreign_text*                                | *foreign_type*           | *flavor*              | *foreign_image_url*  |
+|----------------------------------------|----------------------|----------------|-------------------------------------------------|----------------------------|-------------------------|------------------------|
+| 41007287-4046-58f...                   | Tirapúas trasgo      | Spanish        | {R}, {T}: El Tirapúa...                         | Criatura — Chamán Goblin   | La senda de un chamán...| http://gatherer.w...   |
+| 84efda29-4924-5aa...                   | 石の予見者、デネソール  | Japanese       | 石の予見者、デネソールが戦場に出た...              | 伝説のクリーチャー — 人間・貴族 | 「おぬしは戦場で一日は勝利を得るか...| http://gatherer.w...   |
+| 7643e6ce-358e-5c9...                   | 震惧军将莉莲娜      | Chinese Simplified | 每当一个由你操控的生物死去时，抓一...           | 传奇鹏洛客 — 莉莲娜         | null                    | http://gatherer.w...   |
+| 7f32d840-982c-566...                   | Duelliste de l'es... | French         | Vol, vigilance La...                            | Créature — humain...       | Nathan Steuer, ch...     | http://gatherer.w...   |
+| 48a6fc46-d0f4-51d...                   | Technicien de gad... | French         | Quand le Technici...                            | Créature — gobelin         | null                    | http://gatherer.w...   |
+
+---
+
+### *First 5 rows of 'legalities' table:*
+| *card_id*                            | *format*  | *legality* |
+|----------------------------------------|------------|--------------|
+| 24fa27de-5f37-5b6...                   | Oathbreaker| Legal        |
+| 81bfed24-7596-57f...                   | Alchemy    | Legal        |
+| ce3fd22d-f477-568...                   | Predh      | Legal        |
+| a3599f7e-e36b-5bf...                   | Legacy     | Legal        |
+| ab2f6dcd-8ed0-561...                   | Vintage    | Legal        |
+
+---
+
+### *First 5 rows of 'printings' table:*
+| *card_id*                            | *set_code* |
+|----------------------------------------|--------------|
+| 96cf6577-a58f-5c4...                   | J21          |
+| 3d416628-6961-537...                   | PRM          |
+| a4f7d689-45d9-568...                   | AKH          |
+| 9ac9bceb-4766-5de...                   | HBG          |
+| 5bf11981-a6f8-534...                   | RNA          |
