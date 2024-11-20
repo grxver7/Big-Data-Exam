@@ -66,7 +66,7 @@ docker run --name postgres \
   -d --network bigdatanet postgres
 ```
 
-4. Webserver (Node.js): Implementierung erst später empfohlen
+4. Webserver (Node.js): Run erst später empfohlen
 
 ### # Dateien holen
 Klone das Repository und kopiere die notwendigen Skripte in die jeweiligen Docker-Container.
