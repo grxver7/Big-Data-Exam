@@ -209,7 +209,7 @@ The table describes each job in the DAG
 | silver_job_mtg             | Transforms Bronze layer data into a 3NF structure, reducing redundancies and anomalies.   |
 | ingestDB_job_mtg           | 	Loads the transformed Silver layer data into the database, including only the necessary fields for reporting.  |
 
-## # The Data
+# # The Data
 A more detailed description of the data can be found in the supplementary PDF titled "Doku_Datenstruktur_&_Datensammlung.pdf."
 
 ### Example Data from the Silver Layer (3NF)
