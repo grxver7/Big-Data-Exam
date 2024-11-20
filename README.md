@@ -214,7 +214,7 @@ A more detailed description of the data can be found in the supplementary PDF ti
 
 ### # Example Data from the Silver Layer (3NF)
 
-*First 5 rows of 'cards' table:*
+*5 rows of 'cards' table:*
 | *card_id*                            | *name*           | *mana_cost* | *cmc* | *type*                  | *rarity* | *text*                      | *power* | *toughness* | *artist*               | *image_url*     | *set* | *set_name*              |
 |----------------------------------------|--------------------|---------------|---------|---------------------------|------------|-------------------------------|-----------|---------------|--------------------------|-------------------|---------|---------------------------|
 | 72290bcf-54c4-594...                   | Llanowar Elves     | {G}           | 1.0     | Creature — Elf Druid      | Common     | {T}: Add {G}.                 | 1         | 1             | Victor Adame Minguez     | null              | PANA    | MTG Arena Promos          |
@@ -225,7 +225,7 @@ A more detailed description of the data can be found in the supplementary PDF ti
 
 ---
 
-*First 5 rows of 'foreign_names' table:*
+*5 rows of 'foreign_names' table:*
 | *card_id*                            | *foreign_name*     | *language*   | *foreign_text*                                | *foreign_type*           | *flavor*              | *foreign_image_url*  |
 |----------------------------------------|----------------------|----------------|-------------------------------------------------|----------------------------|-------------------------|------------------------|
 | 41007287-4046-58f...                   | Tirapúas trasgo      | Spanish        | {R}, {T}: El Tirapúa...                         | Criatura — Chamán Goblin   | La senda de un chamán...| http://gatherer.w...   |
@@ -236,7 +236,7 @@ A more detailed description of the data can be found in the supplementary PDF ti
 
 ---
 
-### *First 5 rows of 'legalities' table:*
+### *5 rows of 'legalities' table:*
 | *card_id*                            | *format*  | *legality* |
 |----------------------------------------|------------|--------------|
 | 24fa27de-5f37-5b6...                   | Oathbreaker| Legal        |
@@ -247,7 +247,7 @@ A more detailed description of the data can be found in the supplementary PDF ti
 
 ---
 
-*First 5 rows of 'printings' table:*
+*5 rows of 'printings' table:*
 | *card_id*                            | *set_code* |
 |----------------------------------------|--------------|
 | 96cf6577-a58f-5c4...                   | J21          |
