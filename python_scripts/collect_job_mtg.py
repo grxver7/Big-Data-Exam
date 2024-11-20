@@ -92,12 +92,30 @@ save_data_to_json(card_list)
 local_file = os.path.expanduser("~/raw_data/mtg_data.json")  # Expand ~ to home directory
 hdfs_path = "/user/hadoop/data/raw/mtg_data.json"
 
-# Upload the local file to HDFS
+# Create the HDFS directory if it doesn't exist
+def create_hdfs_directory():
+    try:
+        subprocess.run(["hadoop", "fs", "-test", "-d", "/user/hadoop/data/raw"], check=True)
+    except subprocess.CalledProcessError:
+        subprocess.run(["hadoop", "fs", "-mkdir", "-p", "/user/hadoop/data/raw"], check=True)
+
+# Delete all old data in the raw directory
+def delete_all_old_data():
+    try:
+        subprocess.run(["hadoop", "fs", "-rm", "-r", "/user/hadoop/data/raw/*"], check=True)  # Deletes all files in raw directory
+        print("Old data deleted from HDFS raw directory.")
+    except subprocess.CalledProcessError:
+        print("No existing data found in the raw directory, nothing to delete.")
+
+# Upload the new file to HDFS
 def upload_to_hdfs():
     # Check if the local file exists
     if not os.path.exists(local_file):
         print(f"{local_file} does not exist. Exiting upload.")
         return
+
+    create_hdfs_directory()
+    delete_all_old_data()  # Delete all old data before uploading new data
 
     result = subprocess.run(
         ["hadoop", "fs", "-put", local_file, hdfs_path],
