@@ -77,20 +77,11 @@ create_hdfs_silver_dir_task = HdfsMkdirFileOperator(
     dag=dag
 )
 
-clear_old_local_data_task = ClearDirectoryOperator(
+delete_old_data_task = ClearDirectoryOperator(
     task_id='clear_local_raw_dir',
     directory='/home/airflow/raw_mtg',
     pattern='*',
     dag=dag,
-)
-
-clear_hdfs_raw_dir_task = HdfsPutFileOperator(
-    task_id='delete_hdfs_raw_dir',
-    local_file=None,
-    remote_file=HDFS_RAW_DIR,
-    overwrite=True,
-    hdfs_conn_id='hdfs',
-    dag=dag
 )
 
 upload_to_hdfs_task = DummyOperator(
@@ -168,7 +159,7 @@ ingestDB_job_mtg = SparkSubmitOperator(
 )
 
 # Task dependencies
-create_hdfs_raw_dir_task >> clear_old_local_data_task >> clear_hdfs_raw_dir_task >> upload_to_hdfs_task >> collect_job_mtg
+create_hdfs_raw_dir_task >> delete_old_data_task >> upload_to_hdfs_task >> collect_job_mtg
 collect_job_mtg >> bronze_job_mtg
 bronze_job_mtg >> silver_job_mtg
 silver_job_mtg >> ingestDB_job_mtg
