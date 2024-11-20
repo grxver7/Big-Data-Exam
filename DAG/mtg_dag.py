@@ -77,11 +77,20 @@ create_hdfs_silver_dir_task = HdfsMkdirFileOperator(
     dag=dag
 )
 
-delete_old_data_task = ClearDirectoryOperator(
+clear_old_local_data_task = ClearDirectoryOperator(
     task_id='clear_local_raw_dir',
     directory='/home/airflow/raw_mtg',
     pattern='*',
     dag=dag,
+)
+
+clear_hdfs_raw_dir_task = HdfsPutFileOperator(
+    task_id='delete_hdfs_raw_dir',
+    local_file=None,
+    remote_file=HDFS_RAW_DIR,
+    overwrite=True,
+    hdfs_conn_id='hdfs',
+    dag=dag
 )
 
 upload_to_hdfs_task = DummyOperator(
