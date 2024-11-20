@@ -180,11 +180,11 @@ The table describes each job in the DAG
 |---------------------------|-----------------------------------------------------------------------------|
 | create_hdfs_bronze_directory | Creates the directory for the Bronze layer in HDFS.                       |
 | create_hdfs_silver_directory | Creates the directory for the Silver layer in HDFS.                       |
-| create_raw_directory       | Creates a local directory to temporarily store raw data.                    |
-| create_hdfs_raw_directory  | Creates the directory for raw data in HDFS.                                 |
-| clear_local_raw_dir        | Clears the local raw data directory to make space for new data.             |
-| upload_to_hdfs             | Uploads the collected data to HDFS.                                         |
-| collect_job_mtg            | Collects Magic: The Gathering data from the API and saves it locally.       |
-| bronze_job_mtg             | Processes the data for the Bronze layer (e.g., minimal transformations).    |
-| silver_job_mtg             | Transforms the data for the Silver layer (e.g., cleaning, normalization).   |
-| ingestDB_job_mtg           | Loads the transformed data into the database for reporting.                 |
+| create_raw_directory       | Creates a local directory for temporary storage of raw data.                  |
+| create_hdfs_raw_directory  | Creates the HDFS directory for temporary storage of raw data.                               |
+| clear_local_raw_dir        | Clears the local directory for raw data to prepare for new data ingestion.           |
+| upload_to_hdfs             | Simulates uploading data to HDFS (DummyOperator).                                        |
+| collect_job_mtg            | Collects Magic: The Gathering data from the API, saves it as a JSON file locally, and uploads it to HDFS.       |
+| bronze_job_mtg             | Converts raw JSON data into Parquet format for the Bronze layer in HDFS.    |
+| silver_job_mtg             | Transforms Bronze layer data into a 3NF structure, reducing redundancies and anomalies.   |
+| ingestDB_job_mtg           | 	Loads the transformed Silver layer data into the database, including only the necessary fields for reporting.  |
