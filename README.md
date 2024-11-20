@@ -209,10 +209,12 @@ The table describes each job in the DAG
 | silver_job_mtg             | Transforms Bronze layer data into a 3NF structure, reducing redundancies and anomalies.   |
 | ingestDB_job_mtg           | 	Loads the transformed Silver layer data into the database, including only the necessary fields for reporting.  |
 
-### # The Data
+## # The Data
 A more detailed description of the data can be found in the supplementary PDF titled "Doku_Datenstruktur_&_Datensammlung.pdf."
 
-#### Example Data from the Silver Layer (3NF)
+### Example Data from the Silver Layer (3NF)
+
+### *First 5 rows of 'cards' table:*
 | *card_id*                            | *name*           | *mana_cost* | *cmc* | *type*                  | *rarity* | *text*                      | *power* | *toughness* | *artist*               | *image_url*     | *set* | *set_name*              |
 |----------------------------------------|--------------------|---------------|---------|---------------------------|------------|-------------------------------|-----------|---------------|--------------------------|-------------------|---------|---------------------------|
 | 72290bcf-54c4-594...                   | Llanowar Elves     | {G}           | 1.0     | Creature — Elf Druid      | Common     | {T}: Add {G}.                 | 1         | 1             | Victor Adame Minguez     | null              | PANA    | MTG Arena Promos          |
