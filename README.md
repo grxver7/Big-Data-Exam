@@ -1,9 +1,9 @@
 # Big Data Docker Setup for MTG Data Pipeline
 
-# Introduction
+## Introduction
 This guide provides detailed steps for setting up a Big Data pipeline environment using Docker. The pipeline consists of several key components: Apache Hadoop, Apache Airflow, PostgreSQL, and a Node.js-based web server, all orchestrated within Docker containers. This setup is designed to handle and process data from the Magic: The Gathering API (https://docs.magicthegathering.io/).
 
-# Task description
+## Task description
 The task is to make use of this data to build a searchable database of all MTG trading cards.
 
 Workflow:
@@ -20,16 +20,8 @@ MongoDB…)
 - The whole data workflow must be implemented within an ETL
 workflow tool (e.g. Pentaho Data Integration or Airflow) and run automatically
 
-# ETL-Workflow
-
-### # ETL-Workflow
-The following diagram shows the ETL workflow of the exam project. The workflow is based on the concept of the Medallion Architecture, with a stepwise preparation of data through the Bronze/Silver/Gold layers. 
-This simplifies, among other things, the implementation of the ETL workflow (by breaking the ETL process into stages, making it also easier to debug and maintain), increases the data quality (each layer improves the data with different task and goals) and enhances the traceability of the data (corrupted data in higher layers can be compared with the data of lower layers).
-In the context of the project, an additional Raw layer was introduced, where the data is first stored as JSON in the HDFS, as required in the exam project. The Gold layer is implemented in the form of a PostgreSQL database and contains only the datasets required at the end of the exam project: card_id, name, text, artist, image_url. The data is then made available for consumption on a website hosted with Node.js (on a Docker container).
-
-![image](https://github.com/user-attachments/assets/753503cc-eaa6-46c0-85f1-19f9f4992040)
-
-## Setup Instructions for the ETL-Workflow:
+# Setup Instructions for the ETL-Workflow:
+This section explains how to set up the workflow.
 
 ### # Install Docker:
 ```bash
@@ -178,6 +170,15 @@ The images are clickable:
 
 ![image](https://github.com/user-attachments/assets/19f36be5-0723-4c04-91d5-18bca935e85a)
 
+# Additional Information abaut the Workflow
+
+### # ETL-Workflow
+The following diagram shows the ETL workflow of the exam project. The workflow is based on the concept of the Medallion Architecture, with a stepwise preparation of data through the Bronze/Silver/Gold layers. 
+This simplifies, among other things, the implementation of the ETL workflow (by breaking the ETL process into stages, making it also easier to debug and maintain), increases the data quality (each layer improves the data with different task and goals) and enhances the traceability of the data (corrupted data in higher layers can be compared with the data of lower layers).
+In the context of the project, an additional Raw layer was introduced, where the data is first stored as JSON in the HDFS, as required in the exam project. The Gold layer is implemented in the form of a PostgreSQL database and contains only the datasets required at the end of the exam project: card_id, name, text, artist, image_url. The data is then made available for consumption on a website hosted with Node.js (on a Docker container).
+
+![image](https://github.com/user-attachments/assets/753503cc-eaa6-46c0-85f1-19f9f4992040)
+
 ### # Batch Process
 The implementation of the ETL workflow functions as a batch process designed to load all MTG card data at once, which may take some time to complete. The image below illustrates the expected duration of each process within the DAG
 
@@ -208,5 +209,5 @@ The table describes each job in the DAG
 | silver_job_mtg             | Transforms Bronze layer data into a 3NF structure, reducing redundancies and anomalies.   |
 | ingestDB_job_mtg           | 	Loads the transformed Silver layer data into the database, including only the necessary fields for reporting.  |
 
-
-A more detailed description of the data structure can be found in the supplementary PDF titled "Doku_Datenstruktur_&_Datensammlung.pdf."
+### # The Data
+A more detailed description of the data can be found in the supplementary PDF titled "Doku_Datenstruktur_&_Datensammlung.pdf."
