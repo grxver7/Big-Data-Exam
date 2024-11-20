@@ -170,7 +170,7 @@ The images are clickable:
 
 ![image](https://github.com/user-attachments/assets/19f36be5-0723-4c04-91d5-18bca935e85a)
 
-# Additional Information abaut the Workflow
+# Additional Information about the Workflow
 
 ### # ETL-Workflow
 The following diagram shows the ETL workflow of the exam project. The workflow is based on the concept of the Medallion Architecture, with a stepwise preparation of data through the Bronze/Silver/Gold layers. 
