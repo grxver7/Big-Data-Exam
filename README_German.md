@@ -1,25 +1,40 @@
 # Big Data Docker Setup für die MTG-Datenpipeline
 
-## 1. Einführung
-Diese Anleitung beschreibt die detaillierten Schritte zur Einrichtung einer Big-Data-Pipeline-Umgebung mit Docker. Die Pipeline umfasst mehrere Komponenten: Apache Hadoop, Apache Airflow, PostgreSQL und einen Webserver auf Basis von Node.js, die alle innerhalb von Docker-Containern orchestriert werden. Diese Einrichtung ist darauf ausgelegt, eine Magic: The Gathering (MTG)-Datenpipeline zu verarbeiten.
+## Einführung
+Diese Anleitung bietet detaillierte Schritte zur Einrichtung einer Big Data-Pipeline-Umgebung mit Docker. Die Pipeline besteht aus mehreren wichtigen Komponenten: Apache Hadoop, Apache Airflow, PostgreSQL und einem Webserver auf Basis von Node.js, die alle innerhalb von Docker-Containern orchestriert werden. Diese Einrichtung ist darauf ausgelegt, Daten von der Magic: The Gathering API (https://docs.magicthegathering.io/) zu verarbeiten und zu speichern.
 
-## 2. Einrichtung der Datenpipeline für MTG-Daten:
+## Aufgabenbeschreibung
+Das Ziel ist es, diese Daten zu nutzen, um eine durchsuchbare Datenbank aller MTG-Handelskarten zu erstellen.
+
+Workflow:
+- Daten von api.magicthegathering.io sammeln
+- Rohdaten (JSON-Dateien) in HDFS speichern
+- Rohdaten optimieren, reduzieren und bereinigen und in ein endgültiges Verzeichnis in HDFS speichern
+- MTG-Daten in eine Endbenutzerdatenbank (z. B. MySQL, MongoDB) exportieren
+- Eine einfache HTML-Oberfläche bereitstellen, die:
+  - aus der Endbenutzerdatenbank liest
+  - Benutzereingaben (Kartennamen, Text oder Künstler) verarbeitet
+  - Suchergebnisse anzeigt
+- Der gesamte Datenworkflow muss innerhalb eines ETL-Workflow-Tools (z. B. Pentaho Data Integration oder Airflow) implementiert und automatisch ausgeführt werden.
+
+## Setup-Anweisungen für den ETL-Workflow:
+Dieser Abschnitt erklärt, wie der Workflow eingerichtet wird.
 
 ### # Docker installieren:
 ```bash
 sudo apt-get update
 sudo apt-get install docker.io
-sudo usermod -aG docker $USER # Melde dich ab und wieder an
+sudo usermod -aG docker $USER # Logout und Login erneut durchführen
 ```
 
-### # Docker-Netzwerk erstellen
-Erstelle ein benutzerdefiniertes Netzwerk für die Container:
+### # Erstellen eines Docker-Netzwerks
+Um ein benutzerdefiniertes Docker-Netzwerk zu erstellen, das die Kommunikation zwischen den Containern ermöglicht, verwenden Sie den folgenden Befehl:
 ```bash
 docker network create --driver bridge bigdatanet
 ```
 
-### # Docker-Images ziehen
-Lade die notwendigen Docker-Images für Hadoop, Airflow, PostgreSQL und den Webserver (Node.js) herunter:
+### # Docker-Images herunterladen
+Laden Sie die notwendigen Docker-Images für Hadoop, Airflow, PostgreSQL und den Webserver (Node.js) herunter:
 
 1. Hadoop-Image:
 ```bash
@@ -32,17 +47,19 @@ docker pull marcelmittelstaedt/airflow:latest
 ```
 
 3. PostgreSQL-Image:
+Version: psql (PostgreSQL) 17.1 (Debian 17.1-1.pgdg120+1)
 ```bash
 docker pull postgres
 ```
 
 4. Webserver (Node.js):
+Version: v22.11.0
 ```bash
 docker pull node
 ```
 
 ### # Docker-Container starten
-Starte die Docker-Container für Hadoop, Airflow, PostgreSQL und den Webserver. Jede Komponente wird in ihrem eigenen Container ausgeführt.
+Starten Sie die Docker-Container für Hadoop, Airflow, PostgreSQL und den Webserver. Jede Komponente läuft in ihrem eigenen Container.
 
 1. Hadoop:
 ```bash
@@ -65,11 +82,12 @@ docker run --name postgres \
   -e POSTGRES_PASSWORD=admin \
   -d --network bigdatanet postgres
 ```
+Der Postgres-Docker-Container ist nun so eingerichtet, dass er über das Docker-Netzwerk "bigdatanet" kommunizieren kann und verwendet das Passwort "admin" zur Authentifizierung.
 
-4. Webserver (Node.js): Run erst später empfohlen
+4. Webserver (Node.js): Der Webserver wird später empfohlen.
 
-### # Dateien holen
-Klone das Repository und kopiere die notwendigen Skripte in die jeweiligen Docker-Container.
+### # Dateien abrufen
+Klonen Sie das Repository und kopieren Sie die notwendigen Skripte in die jeweiligen Docker-Container.
 
 1. Repository klonen:
 ```bash
@@ -81,7 +99,7 @@ git clone https://github.com/grxver7/Big-Data-Exam.git
 mkdir website_mtg
 ```
 
-3. Dateien in die richtige Umgebung kopieren:
+3. Dateien an den richtigen Ort kopieren:
 
 - Python-Skripte in den Airflow-Container kopieren:
 ```bash
@@ -101,10 +119,10 @@ for file in /home/lxcx_holder/Big-Data-Exam/website_mtg/*; do
     cp "$file" /home/lxcx_holder/website_mtg/; done
 ```
 
-### # Dienste konfigurieren und starten
+### # Dienste anpassen und starten
 
 1. **Hadoop:**
-   Melde dich im Hadoop-Container an und starte die Hadoop-Dienste:
+   Melden Sie sich im Hadoop-Container an und starten Sie die Hadoop-Dienste:
 ```bash
 docker exec -it hadoop bash
 sudo su hadoop
@@ -114,37 +132,34 @@ hiveserver2
 ```
 
 2. **Airflow:**
-   Melde dich im Airflow-Container an, installiere die erforderlichen Python-Abhängigkeiten und greife auf das Airflow-Dashboard zu:
+   Melden Sie sich im Airflow-Container an, installieren Sie die notwendigen Python-Abhängigkeiten und greifen Sie auf die Airflow-UI zu:
 ```bash
 sudo docker exec -it airflow bash
 sudo su airflow
 pip install mtgsdk
 ```
-   Greife auf Airflow zu unter: [http://<external-ip-of-vm>:8080/admin/](http://<external-ip-of-vm>:8080/admin/)
+   Greifen Sie auf Airflow zu unter: [http://<external-ip-of-vm>:8080/admin/](http://<external-ip-of-vm>:8080/admin/)
 
 ### # Webserver einrichten
-Verwende das Dockerfile im Verzeichnis `website_mtg`, um den Webserver auf Basis von Node.js zu erstellen.
+Verwenden Sie das Dockerfile im Verzeichnis website_mtg, um den Node.js-basierten Webserver zu erstellen.
 
 1. Docker-Image erstellen:
-```bash
-sudo docker build --no-cache -t mtg-node-app .
-```
-   oder
 ```bash
 sudo docker build -t mtg-node-app .
 ```
 
-2. Webserver-Container starten:
+2. Den Webserver-Container starten:
 ```bash
 docker run -it -p 5000:5000 --net bigdatanet --name mtg-node-app mtg-node-app
 ```
+Der Webserver-Docker-Container ist nun auf Port 5000 zugänglich und kann über das Docker-Netzwerk "bigdatanet" kommunizieren.
 
 ### # Fehlerbehebung
-- **Airflow ist nicht zugänglich?** Versuche, die VM oder deinen lokalen Rechner neu zu starten.
-- **Container können nicht miteinander kommunizieren?** Stelle sicher, dass alle Container mit dem `bigdatanet`-Netzwerk verbunden sind.
+- **Airflow ist nicht zugänglich?** Versuchen Sie, die VM oder Ihr lokales Gerät neu zu starten.
+- **Container kommunizieren nicht?** Stellen Sie sicher, dass alle Container mit dem Netzwerk `bigdatanet` verbunden sind.
 
-### # Die Website
-Nun sind die Karten unter [http://<external-ip-of-vm>:5000/](http://<external-ip-of-vm>:5000/) für die Suche verfügbar.
+### # Eindrücke der implementierten Website
+Nun sind die Karten zur Suche unter http://<external-ip-of-vm>:5000/ verfügbar.
 
 ![image](https://github.com/user-attachments/assets/0e3892b8-da1e-4932-9120-8f3461bdb8d3)
 
@@ -152,17 +167,18 @@ Die Bilder sind anklickbar:
 
 ![image](https://github.com/user-attachments/assets/19f36be5-0723-4c04-91d5-18bca935e85a)
 
-### # Batch-Prozess
-Dies ist ein Batch-Prozess, der alle MTG-Kartendaten auf einmal lädt, was einige Zeit in Anspruch nehmen kann.
-
-![image](https://github.com/user-attachments/assets/2dff15ba-c841-4ef7-829d-c20ac34518f0)
-
-# ETL-Workflow
+# Weitere Informationen zum Workflow
 
 ### # ETL-Workflow
-Das folgende Diagramm zeigt den ETL-Workflow des Exam-Projekts. Der Workflow basiert auf der Medallion-Architektur und bereitet die Daten schrittweise durch die Bronze/Silver/Gold-Schichten vor. Dies erleichtert unter anderem die Implementierung des ETL-Workflows, erhöht die Datenqualität und verbessert die Traceability der Daten. Im Kontext des Projekts wurde eine zusätzliche Raw-Schicht eingeführt, in der die Daten zunächst als JSON im HDFS gespeichert werden, wie es im Exam-Projekt gefordert ist. Die Gold-Schicht ist als PostgreSQL-Datenbank implementiert und enthält nur die Datensätze, die am Ende des Exam-Projekts benötigt werden: card_id, name, text, artist, image_url. Die Daten sind dann für den Zugriff über eine mit Node.js gehostete Website verfügbar.
+Das folgende Diagramm zeigt den ETL-Workflow des Prüfungsprojekts. Der Workflow basiert auf dem Konzept der Medallion-Architektur, mit einer schrittweisen Aufbereitung der Daten durch die Bronze/Silver/Gold-Ebenen. Dies vereinfacht unter anderem die Umsetzung des ETL-Workflows (indem der ETL-Prozess in Phasen unterteilt wird, was auch das Debuggen und Warten erleichtert), erhöht die Datenqualität (jede Ebene verbessert die Daten mit unterschiedlichen Aufgaben und Zielen) und verbessert die Nachvollziehbarkeit der Daten (korrupten Daten in höheren Ebenen können mit den Daten in niedrigeren Ebenen verglichen werden).
+Im Kontext des Projekts wurde eine zusätzliche Raw-Ebene eingeführt, in der die Daten zuerst als JSON im HDFS gespeichert werden, wie es im Prüfungsprojekt erforderlich ist. Die Gold-Ebene wird in Form einer PostgreSQL-Datenbank implementiert und enthält nur die für das Reporting erforderlichen Datensätze: card_id, name, text, artist, image_url. Die Daten werden dann für die Verwendung auf einer Website bereitgestellt, die mit Node.js (auf einem Docker-Container) gehostet wird.
 
 ![image](https://github.com/user-attachments/assets/753503cc-eaa6-46c0-85f1-19f9f4992040)
+
+### # Batch-Prozess
+Die Implementierung des ETL-Workflows funktioniert als Batch-Prozess, der alle MTG-Kartendaten auf einmal lädt, was einige Zeit in Anspruch nehmen kann. Das Bild unten veranschaulicht die erwartete Dauer jedes Prozesses im DAG.
+
+![image](https://github.com/user-attachments/assets/2dff15ba-c841-4ef7-829d-c20ac34518f0)
 
 ### # DAG
 Der Workflow wird mit Airflow automatisiert, mit den folgenden Schritten im DAG:
