@@ -1,9 +1,27 @@
 # Big Data Docker Setup for MTG Data Pipeline
 
-## 1. Introduction
-This guide provides detailed steps for setting up a Big Data pipeline environment using Docker. The pipeline involves several components: Apache Hadoop, Apache Airflow, PostgreSQL, and a Node.js-based Webserver, all orchestrated within Docker containers. This setup is designed to handle a Magic: The Gathering (MTG) data pipeline.
+## Introduction
+This guide provides detailed steps for setting up a Big Data pipeline environment using Docker. The pipeline consists of several key components: Apache Hadoop, Apache Airflow, PostgreSQL, and a Node.js-based web server, all orchestrated within Docker containers. This setup is designed to handle and process data from the Magic: The Gathering API (https://docs.magicthegathering.io/).
 
-## 2. The following shows how to set up the data pipeling for MTG-Data:
+## Task description
+The task is to make use of this data to build a searchable database of all MTG trading cards.
+
+Workflow:
+- Gather data from api.magicthegathering.io
+- Save raw data (JSON files) to HDFS
+- Optimize, reduce and clean raw data and save it to final
+directory on HDFS
+- Export MTG data to end-user database (e.g. MySQL,
+MongoDB…)
+- Provide a simple HTML Frontend which is able to:
+  - read from end-user database
+  - process user input (card name, text or artist)
+  - display search results
+- The whole data workflow must be implemented within an ETL
+workflow tool (e.g. Pentaho Data Integration or Airflow) and run automatically
+
+# Setup Instructions for the ETL-Workflow:
+This section explains how to set up the workflow.
 
 ### # Install Docker:
 ```bash
@@ -13,7 +31,7 @@ sudo usermod -aG docker $USER # exit and login again
 ```
 
 ### # Create a docker network
-Create a custom network for the containers:
+To create a custom Docker network that enables communication between containers, use the following command:
 ```bash
 docker network create --driver bridge bigdatanet
 ```
@@ -32,11 +50,13 @@ docker pull marcelmittelstaedt/airflow:latest
 ```
 
 3. PostgreSQL Image:
+4. Version: psql (PostgreSQL) 17.1 (Debian 17.1-1.pgdg120+1)
 ```bash
 docker pull postgres
 ```
 
 4. Webserver (Node.js):
+Version: v22.11.0
 ```bash
 docker pull node
 ```
@@ -59,12 +79,13 @@ docker run -dit --name airflow \
   --net bigdatanet marcelmittelstaedt/airflow:latest
 ```
 
-3. PostgreSQL:
+3. Postgres:
 ```bash
 docker run --name postgres \
   -e POSTGRES_PASSWORD=admin \
   -d --network bigdatanet postgres
 ```
+The Postgres Docker  is now set up to communicate over the Docker network "bigdatanet" and uses the password "admin" for authentication.
 
 4. Webserver (Node.js): Running is recommended later
 
@@ -127,10 +148,6 @@ Use the Dockerfile in the website_mtg directory to build the Node.js-based webse
 
 1. Build the Docker image:
 ```bash
-sudo docker build --no-cache -t mtg-node-app .
-```
-   or
-```bash
 sudo docker build -t mtg-node-app .
 ```
 
@@ -138,12 +155,13 @@ sudo docker build -t mtg-node-app .
 ```bash
 docker run -it -p 5000:5000 --net bigdatanet --name mtg-node-app mtg-node-app
 ```
+The webserver Docker container is now accessible on port 5000 and can communicate over the "bigdatanet" Docker network.
 
 ### # Troubleshooting
 - **Airflow is not accessible?** Try restarting the VM or your local machine.
 - **Containers not communicating?** Ensure all containers are connected to the `bigdatanet` network.
 
-### # The Website
+### # Impressions of the implemented Website
 Now the cards are available for search under http://<external-ip-of-vm>:5000/
 
 ![image](https://github.com/user-attachments/assets/0e3892b8-da1e-4932-9120-8f3461bdb8d3)
@@ -152,17 +170,19 @@ The images are clickable:
 
 ![image](https://github.com/user-attachments/assets/19f36be5-0723-4c04-91d5-18bca935e85a)
 
-### # Batch Process
-This is a batch process designed to load all MTG card data at once, which may take some time to complete.
-
-![image](https://github.com/user-attachments/assets/2dff15ba-c841-4ef7-829d-c20ac34518f0)
-
-# ETL-Workflow
+# Additional Information about the Workflow
 
 ### # ETL-Workflow
-The following diagram shows the ETL workflow of the exam project. The workflow is based on the concept of the Medallion Architecture, with a stepwise preparation of data through the Bronze/Silver/Gold layers. This simplifies, among other things, the implementation of the ETL workflow, increases the data quality and enhances the traceability of the data. In the context of the project, an additional Raw layer was introduced, where the data is first stored as JSON in the HDFS, as required in the exam project. The Gold layer is implemented in the form of a PostgreSQL database and contains only the datasets required at the end of the exam project: card_id, name, text, artist, image_url. The data is then made available for consumption on a website hosted with Node.js (on a Docker container).
+The following diagram shows the ETL workflow of the exam project. The workflow is based on the concept of the Medallion Architecture, with a stepwise preparation of data through the Bronze/Silver/Gold layers. 
+This simplifies, among other things, the implementation of the ETL workflow (by breaking the ETL process into stages, making it also easier to debug and maintain), increases the data quality (each layer improves the data with different task and goals) and enhances the traceability of the data (corrupted data in higher layers can be compared with the data of lower layers).
+In the context of the project, an additional Raw layer was introduced, where the data is first stored as JSON in the HDFS, as required in the exam project. The Gold layer is implemented in the form of a PostgreSQL database and contains only the datasets required at the end of the exam project: card_id, name, text, artist, image_url. The data is then made available for consumption on a website hosted with Node.js (on a Docker container).
 
 ![image](https://github.com/user-attachments/assets/753503cc-eaa6-46c0-85f1-19f9f4992040)
+
+### # Batch Process
+The implementation of the ETL workflow functions as a batch process designed to load all MTG card data at once, which may take some time to complete. The image below illustrates the expected duration of each process within the DAG
+
+![image](https://github.com/user-attachments/assets/2dff15ba-c841-4ef7-829d-c20ac34518f0)
 
 ### # DAG
 The workflow is automated using Airflow, with the following steps in the DAG:
@@ -188,3 +208,6 @@ The table describes each job in the DAG
 | bronze_job_mtg             | Converts raw JSON data into Parquet format for the Bronze layer in HDFS.    |
 | silver_job_mtg             | Transforms Bronze layer data into a 3NF structure, reducing redundancies and anomalies.   |
 | ingestDB_job_mtg           | 	Loads the transformed Silver layer data into the database, including only the necessary fields for reporting.  |
+
+### # The Data
+A more detailed description of the data can be found in the supplementary PDF titled "Doku_Datenstruktur_&_Datensammlung.pdf."
