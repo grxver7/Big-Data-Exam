@@ -66,7 +66,7 @@ docker run --name postgres \
   -d --network bigdatanet postgres
 ```
 
-4. Webserver (Node.js): Wird später empfohlen
+4. Webserver (Node.js): Implementierung erst später empfohlen
 
 ### # Dateien holen
 Klone das Repository und kopiere die notwendigen Skripte in die jeweiligen Docker-Container.
@@ -187,6 +187,4 @@ Die Tabelle beschreibt jeden Job im DAG:
 | collect_job_mtg            | Sammelt Magic: The Gathering-Daten von der API, speichert sie als JSON-Datei lokal und lädt sie in HDFS hoch.       |
 | bronze_job_mtg             | Wandelt die Rohdaten im JSON-Format in Parquet für die Bronze-Schicht in HDFS um.    |
 | silver_job_mtg             | Transformiert die Bronze-Schicht-Daten in eine 3NF-Struktur, um Redundanzen und Anomalien zu reduzieren.   |
-| ingest
-
-DB_job_mtg           | Lädt die bereinigten Daten in eine PostgreSQL-Datenbank.
+| ingestDB_job_mtg           | Lädt die bereinigten Daten in eine PostgreSQL-Datenbank. |
