@@ -160,7 +160,7 @@ Dies ist ein Batch-Prozess, der alle MTG-Kartendaten auf einmal lädt, was einig
 # ETL-Workflow
 
 ### # ETL-Workflow
-Das folgende Diagramm zeigt den ETL-Workflow des Exam-Projekts. Der Workflow basiert auf der Medallion-Architektur und bereitet die Daten schrittweise durch die Bronze/Silver/Gold-Schichten vor. Im Kontext des Projekts wurde eine zusätzliche Raw-Schicht eingeführt, in der die Daten zunächst als JSON im HDFS gespeichert werden, wie es im Exam-Projekt gefordert ist. Die Gold-Schicht ist als PostgreSQL-Datenbank implementiert und enthält nur die Datensätze, die am Ende des Exam-Projekts benötigt werden: card_id, name, text, artist, image_url. Die Daten sind dann für den Zugriff über eine mit Node.js gehostete Website verfügbar.
+Das folgende Diagramm zeigt den ETL-Workflow des Exam-Projekts. Der Workflow basiert auf der Medallion-Architektur und bereitet die Daten schrittweise durch die Bronze/Silver/Gold-Schichten vor. Dies erleichtert unter anderem die Implementierung des ETL-Workflows und verbessert die Traceability der Daten. Im Kontext des Projekts wurde eine zusätzliche Raw-Schicht eingeführt, in der die Daten zunächst als JSON im HDFS gespeichert werden, wie es im Exam-Projekt gefordert ist. Die Gold-Schicht ist als PostgreSQL-Datenbank implementiert und enthält nur die Datensätze, die am Ende des Exam-Projekts benötigt werden: card_id, name, text, artist, image_url. Die Daten sind dann für den Zugriff über eine mit Node.js gehostete Website verfügbar.
 
 ![image](https://github.com/user-attachments/assets/753503cc-eaa6-46c0-85f1-19f9f4992040)
 
