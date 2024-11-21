@@ -3,32 +3,28 @@
 import pyspark
 from pyspark.sql import SparkSession
 import argparse
-from pyspark.sql.functions import desc
-from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, explode
-
 
 def get_args():
     """
     Parses Command Line Args
     """
-    parser = argparse.ArgumentParser(description='Some Basic Spark Job doing some stuff on IMDb data stored within HDFS.')
+    parser = argparse.ArgumentParser(description='Optimized Spark Job for processing Magic: The Gathering data in HDFS.')
     parser.add_argument('--hdfs_source_dir', help='HDFS source directory, e.g. /user/hadoop/data/bronze', required=True, type=str)
     parser.add_argument('--hdfs_target_dir', help='HDFS target directory, e.g. /user/hadoop/data/silver', required=True, type=str)
     parser.add_argument('--hdfs_target_format', help='HDFS target format, e.g. csv or parquet or...', required=True, type=str)
     
     return parser.parse_args()
 
-if __name__== '__main__':
-    
+if __name__ == '__main__':
     # Parse Command Line Args
     args = get_args()
-    
-        # Initialize Spark Context
+
+    # Initialize Spark Context and Session
     sc = pyspark.SparkContext()
     spark = SparkSession(sc)
-    
-  # Create the 'silver' database if it does not exist
+
+    # Create the 'silver' database if it does not exist
     spark.sql("CREATE DATABASE IF NOT EXISTS silver")
 
     # Define HDFS paths
@@ -38,8 +34,11 @@ if __name__== '__main__':
     # Load and clean bronze data
     df_bronze = spark.read.parquet(bronze_hdfs_path).dropDuplicates()
 
-    # Cache the cleaned data for reuse
+    # Cache the cleaned data for reuse (improves performance on subsequent actions)
     df_silver = df_bronze.cache()
+
+    # Partition the data upfront for optimal writing
+    df_silver = df_silver.repartition(20)  # Adjust number of partitions based on data size
 
     # 1. Card Table: Main table for card properties
     card_df = df_silver.select(
@@ -48,6 +47,7 @@ if __name__== '__main__':
         "artist", "image_url", "set", "set_name"
     ).dropDuplicates()
 
+    # Write Card Data to Silver Table, partition by 'set' to improve query performance
     card_df.write.mode("overwrite").partitionBy("set").option("path", f"{silver_hdfs_path}/cards").saveAsTable("silver.cards")
 
     # 2. Foreign Names Table: Multilingual names and text
@@ -64,6 +64,7 @@ if __name__== '__main__':
         )
         .dropDuplicates()
     )
+
     foreign_names_df.write.mode("overwrite").option("path", f"{silver_hdfs_path}/foreign_names").saveAsTable("silver.foreign_names")
 
     # 3. Legality Table: Game formats and legality
@@ -76,6 +77,7 @@ if __name__== '__main__':
         )
         .dropDuplicates()
     )
+
     legalities_df.write.mode("overwrite").option("path", f"{silver_hdfs_path}/legalities").saveAsTable("silver.legalities")
 
     # 4. Printings Table: Sets in which the card appeared
@@ -87,6 +89,7 @@ if __name__== '__main__':
         )
         .dropDuplicates()
     )
+
     printings_df.write.mode("overwrite").option("path", f"{silver_hdfs_path}/printings").saveAsTable("silver.printings")
 
     # Stop Spark session
