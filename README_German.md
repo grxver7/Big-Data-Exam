@@ -178,7 +178,7 @@ Im Kontext des Projekts wurde eine zusätzliche Raw-Ebene eingeführt, in der di
 ### # Batch-Prozess
 Die Implementierung des ETL-Workflows funktioniert als Batch-Prozess, der alle MTG-Kartendaten auf einmal lädt, was einige Zeit in Anspruch nehmen kann. Das Bild unten veranschaulicht die erwartete Dauer jedes Prozesses im DAG.
 
-![image](https://github.com/user-attachments/assets/2dff15ba-c841-4ef7-829d-c20ac34518f0)
+![image](https://github.com/user-attachments/assets/84139c69-c33c-435f-b831-6d936f10160b)
 
 ### # DAG
 Der Workflow wird mit Airflow automatisiert, mit den folgenden Schritten im DAG:
