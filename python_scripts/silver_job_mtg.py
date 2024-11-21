@@ -38,7 +38,7 @@ if __name__ == '__main__':
     df_silver = df_bronze.cache()
 
     # Partition the data upfront for optimal writing
-    df_silver = df_silver.repartition(20)  # Adjust number of partitions based on data size
+    df_silver = df_silver.repartition(4)  # Adjust number of partitions based on data size
 
     # 1. Card Table: Main table for card properties
     card_df = df_silver.select(
