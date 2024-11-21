@@ -48,4 +48,3 @@ if __name__== '__main__':
     print(f"Directory {args.hdfs_target_dir} already exists.")
 
     spark.stop()
-
