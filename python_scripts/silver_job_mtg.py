@@ -28,74 +28,66 @@ if __name__== '__main__':
     sc = pyspark.SparkContext()
     spark = SparkSession(sc)
     
-    # Create the 'silver' database if it does not exist
+  # Create the 'silver' database if it does not exist
     spark.sql("CREATE DATABASE IF NOT EXISTS silver")
-    
-    # Pfade für die HDFS Layer definieren
+
+    # Define HDFS paths
     bronze_hdfs_path = args.hdfs_source_dir
     silver_hdfs_path = args.hdfs_target_dir
 
-    # Load bronze data
-    df_bronze = spark.read.parquet(bronze_hdfs_path)
-    
-    # Clean data: Remove duplicates
-    df_silver = df_bronze.dropDuplicates()
-    
+    # Load and clean bronze data
+    df_bronze = spark.read.parquet(bronze_hdfs_path).dropDuplicates()
+
+    # Cache the cleaned data for reuse
+    df_silver = df_bronze.cache()
+
     # 1. Card Table: Main table for card properties
     card_df = df_silver.select(
         col("id").alias("card_id"),
         "name", "mana_cost", "cmc", "type", "rarity", "text", "power", "toughness", 
         "artist", "image_url", "set", "set_name"
-        ).dropDuplicates()
-    
-    # Write to HDFS with path specified for the "cards" table
-    card_df.write.mode("overwrite").option("path", f"{silver_hdfs_path}/cards").saveAsTable("silver.cards")
-    
-    # 2. Foreign Names Table: Multilingual names and text
-    foreign_names_df = df_silver.select("id", explode("foreign_names").alias("foreign_name_info"))     .select(
-        col("id").alias("card_id"),
-        col("foreign_name_info.name").alias("foreign_name"),
-        col("foreign_name_info.language"),
-        col("foreign_name_info.text").alias("foreign_text"),
-        col("foreign_name_info.type").alias("foreign_type"),
-        col("foreign_name_info.flavor"),
-        col("foreign_name_info.imageUrl").alias("foreign_image_url")
     ).dropDuplicates()
-    
-    # Write to Hive table
-    foreign_names_df.write.mode("overwrite").saveAsTable("silver.foreign_names")
-    
+
+    card_df.write.mode("overwrite").partitionBy("set").option("path", f"{silver_hdfs_path}/cards").saveAsTable("silver.cards")
+
     # 2. Foreign Names Table: Multilingual names and text
-    foreign_names_df = df_silver.select("id", explode("foreign_names").alias("foreign_name_info"))     .select(
-        col("id").alias("card_id"),
-        col("foreign_name_info.name").alias("foreign_name"),
-        col("foreign_name_info.language"),
-        col("foreign_name_info.text").alias("foreign_text"),
-        col("foreign_name_info.type").alias("foreign_type"),
-        col("foreign_name_info.flavor"),
-        col("foreign_name_info.imageUrl").alias("foreign_image_url")
-    ).dropDuplicates()
-    
-    # Write to HDFS with path specified for the "foreign_names" table
+    foreign_names_df = (
+        df_silver.select("id", explode("foreign_names").alias("foreign_name_info"))
+        .select(
+            col("id").alias("card_id"),
+            col("foreign_name_info.name").alias("foreign_name"),
+            col("foreign_name_info.language"),
+            col("foreign_name_info.text").alias("foreign_text"),
+            col("foreign_name_info.type").alias("foreign_type"),
+            col("foreign_name_info.flavor"),
+            col("foreign_name_info.imageUrl").alias("foreign_image_url")
+        )
+        .dropDuplicates()
+    )
     foreign_names_df.write.mode("overwrite").option("path", f"{silver_hdfs_path}/foreign_names").saveAsTable("silver.foreign_names")
-    
+
     # 3. Legality Table: Game formats and legality
-    legalities_df = df_silver.select("id", explode("legalities").alias("legality_info"))     .select(
-        col("id").alias("card_id"),
-        col("legality_info.format"),
-        col("legality_info.legality")
-    ).dropDuplicates()
-    
-    # Write to HDFS with path specified for the "legalities" table
+    legalities_df = (
+        df_silver.select("id", explode("legalities").alias("legality_info"))
+        .select(
+            col("id").alias("card_id"),
+            col("legality_info.format"),
+            col("legality_info.legality")
+        )
+        .dropDuplicates()
+    )
     legalities_df.write.mode("overwrite").option("path", f"{silver_hdfs_path}/legalities").saveAsTable("silver.legalities")
-    
+
     # 4. Printings Table: Sets in which the card appeared
-    printings_df = df_silver.select("id", explode("printings").alias("set_code"))     .select(
-        col("id").alias("card_id"),
-        "set_code"
-    ).dropDuplicates()
-    
-    # Write to HDFS with path specified for the "printings" table
+    printings_df = (
+        df_silver.select("id", explode("printings").alias("set_code"))
+        .select(
+            col("id").alias("card_id"),
+            "set_code"
+        )
+        .dropDuplicates()
+    )
     printings_df.write.mode("overwrite").option("path", f"{silver_hdfs_path}/printings").saveAsTable("silver.printings")
-    
+
+    # Stop Spark session
     spark.stop()
