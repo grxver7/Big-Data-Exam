@@ -11,6 +11,7 @@ def load_card_data():
     start_time = time.time()  # Start time for data retrieval
     cards = Card.all()  # Retrieve all cards
     loading_time = time.time() - start_time  # Calculate retrieval time
+    print(f"All card data has been loaded in {loading_time:.2f} seconds.")
     card_list = []
     count = 0  # Counter to track the number of entries
 
@@ -60,8 +61,6 @@ def load_card_data():
         }
         card_list.append(card_info)
         count += 1  # Increment the counter
-
-    retrieval_time = time.time() - start_time  # Calculate loading time
     
     return card_list
 
@@ -80,7 +79,7 @@ def save_data_to_json(card_list):
         json.dump(card_list, json_file, ensure_ascii=False, indent=4)
 
     save_time = time.time() - start_time  # Calculate save time
-    print(f"All card data has been saved to {file_path} in {save_time:.2f} seconds.")
+    print(f"All card data has been saved as JSON to {file_path} in {save_time:.2f} seconds.")
 
 # Load card data
 card_list = load_card_data()
@@ -117,6 +116,8 @@ def upload_to_hdfs():
     create_hdfs_directory()
     delete_all_old_data()  # Delete all old data before uploading new data
 
+    start_time = time.time()  # Start time for saving data
+    
     result = subprocess.run(
         ["hadoop", "fs", "-put", local_file, hdfs_path],
         check=False,  # Don't raise an error automatically
@@ -128,6 +129,9 @@ def upload_to_hdfs():
         print(f"Data successfully uploaded to HDFS at {hdfs_path}.")
     else:
         print(f"Error uploading data to HDFS: {result.stderr.decode()}")
+    
+    load_hdfs_time = time.time() - start_time  # Calculate save time
+    print(f"All card data has been saved as JSON to HDFS in {load_hdfs_time:.2f} seconds.")
 
 # Run the script
 upload_to_hdfs()
