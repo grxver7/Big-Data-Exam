@@ -1,4 +1,4 @@
-# Big Data Docker Setup für die MTG-Datenpipeline
+# Big Data Exam: MTG-Datenpipeline
 
 ## Einführung
 Diese Anleitung bietet detaillierte Schritte zur Einrichtung einer Big Data-Pipeline-Umgebung mit Docker. Die Pipeline besteht aus mehreren wichtigen Komponenten: Apache Hadoop, Apache Airflow, PostgreSQL und einem Webserver auf Basis von Node.js, die alle innerhalb von Docker-Containern orchestriert werden. Diese Einrichtung ist darauf ausgelegt, Daten von der Magic: The Gathering API (https://docs.magicthegathering.io/) zu verarbeiten und zu speichern.
@@ -176,9 +176,9 @@ Im Kontext des Projekts wurde eine zusätzliche Raw-Ebene eingeführt, in der di
 ![image](https://github.com/user-attachments/assets/753503cc-eaa6-46c0-85f1-19f9f4992040)
 
 ### # Batch-Prozess
-Die Implementierung des ETL-Workflows funktioniert als Batch-Prozess, der alle MTG-Kartendaten auf einmal lädt, was einige Zeit in Anspruch nehmen kann. Das Bild unten veranschaulicht die erwartete Dauer jedes Prozesses im DAG.
+Der ETL-Workflow wird als Batch-Prozess ausgeführt, bei dem der gesamte MTG-Datensatz in einem Durchgang geladen und transformiert wird. Dies gewährleistet eine hochwertige Datenverarbeitung, kann jedoch eine gewisse Zeit in Anspruch nehmen. Auf der Google-VM („c3d-standard-4“) kann der gesamte Workflow bis zu 20 Minuten dauern. Das untenstehende Diagramm zeigt die geschätzte Dauer der einzelnen Schritte innerhalb des DAG.
 
-![image](https://github.com/user-attachments/assets/84139c69-c33c-435f-b831-6d936f10160b)
+![image](https://github.com/user-attachments/assets/9fa5b381-e779-485b-9693-c4dded4951e2)
 
 ### # DAG
 Der Workflow wird mit Airflow automatisiert, mit den folgenden Schritten im DAG:
