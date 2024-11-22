@@ -62,20 +62,6 @@ if __name__== '__main__':
         col("foreign_name_info.imageUrl").alias("foreign_image_url")
     ).dropDuplicates()
     
-    # Write to Hive table
-    foreign_names_df.write.mode("overwrite").saveAsTable("silver.foreign_names")
-    
-    # 2. Foreign Names Table: Multilingual names and text
-    foreign_names_df = df_silver.select("id", explode("foreign_names").alias("foreign_name_info"))     .select(
-        col("id").alias("card_id"),
-        col("foreign_name_info.name").alias("foreign_name"),
-        col("foreign_name_info.language"),
-        col("foreign_name_info.text").alias("foreign_text"),
-        col("foreign_name_info.type").alias("foreign_type"),
-        col("foreign_name_info.flavor"),
-        col("foreign_name_info.imageUrl").alias("foreign_image_url")
-    ).dropDuplicates()
-    
     # Write to HDFS with path specified for the "foreign_names" table
     foreign_names_df.write.mode("overwrite").option("path", f"{silver_hdfs_path}/foreign_names").saveAsTable("silver.foreign_names")
     
