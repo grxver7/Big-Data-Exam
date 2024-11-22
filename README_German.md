@@ -1,4 +1,4 @@
-# Big Data Docker Setup für die MTG-Datenpipeline
+# Big Data Exam: MTG-Datenpipeline
 
 ## Einführung
 Diese Anleitung bietet detaillierte Schritte zur Einrichtung einer Big Data-Pipeline-Umgebung mit Docker. Die Pipeline besteht aus mehreren wichtigen Komponenten: Apache Hadoop, Apache Airflow, PostgreSQL und einem Webserver auf Basis von Node.js, die alle innerhalb von Docker-Containern orchestriert werden. Diese Einrichtung ist darauf ausgelegt, Daten von der Magic: The Gathering API (https://docs.magicthegathering.io/) zu verarbeiten und zu speichern.
